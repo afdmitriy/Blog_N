@@ -2,22 +2,34 @@ import { Injectable } from "@nestjs/common";
 import { UserRepository, } from "../infrastructure/user.repository";
 import { UserCreateModel, UserInputModel } from "../api/models/input/user.input";
 import { User } from "../domain/user.mongoose.entity";
-import bcrypt from 'bcrypt';
 import { UserOutputModel } from "../api/models/output/user.output.model";
 import { ResultStatus } from "src/base/models/enums/enums";
 import { ResultObjectModel } from "src/base/models/result.object.type";
+import bcrypt from 'bcrypt'
+
 
 @Injectable()
 export class UserService {
-	constructor(protected userRepository: UserRepository) {}
+	constructor(protected userRepository: UserRepository,
+	) {}
 
 	async createUser(userData: UserInputModel): Promise<ResultObjectModel<UserOutputModel>> {
-		const passwordSalt = await bcrypt.genSalt(10);
-		const passwordHash = await bcrypt.hash(userData.password, passwordSalt);
+		const userNameIsExist = await this.userRepository.getUserByLoginOrEmail(userData.login)
+		if(userNameIsExist?._id) return {
+			data: null,
+			errorMessage: 'User with this name already exist',
+			status: ResultStatus.BAD_REQUEST
+		}
+		const userEmailIsExist = await this.userRepository.getUserByLoginOrEmail(userData.email)
+		if(userEmailIsExist?._id) return {
+			data: null,
+			errorMessage: 'User with this email already exist',
+			status: ResultStatus.BAD_REQUEST
+		}
+		const passwordHash = await this.generateHash(userData.password);
 		const userCreateData: UserCreateModel = {
 			...userData,
-			passwordHash,
-			passwordSalt
+			passwordHash
 		}
 		const newUser = new User(userCreateData);
 
@@ -62,5 +74,35 @@ export class UserService {
 			status: ResultStatus.SUCCESS
 		}
 	}
+
+	async createConfirmData(userId: string, confirmCode: string): Promise<true | null> {
+		const user = await this.userRepository.getUserById(userId)
+
+		if (!user) return null
+
+		user.createConfirmData(confirmCode)
+
+		await user.save()
+		return true
+	}
+
+	async getUserByConfirmCode(confirmCode: string): Promise<ResultObjectModel<UserOutputModel>> {
+		const user = await this.userRepository.getUserByConfirmCode(confirmCode)
+		if (!user) return {
+			data: null,
+			errorMessage: 'User not found',
+			status: ResultStatus.NOT_FOUND,
+		}
+
+		return {
+			data: User.toDto(user),
+			status: ResultStatus.SUCCESS
+		}
+	}
+
+	async generateHash(password: string) {
+      const hash = await bcrypt.hash(password, 10);
+      return hash;
+   }
 
 }

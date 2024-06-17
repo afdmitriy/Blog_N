@@ -33,4 +33,20 @@ export class UserRepository {
 		return !!result;
 	}
 
+   async getUserByConfirmCode(
+      confirmCode: string
+   ): Promise<UserDocument | null> {
+         return this.userModel.findOne({ 'emailConfirmationData.confirmCode': confirmCode });
+   }
+
+	async getUserByRecoveryCode(
+      recoveryCode: string
+   ): Promise<UserDocument | null> {
+         return this.userModel.findOne({ 'passwordResetData.recoveryCode': recoveryCode });
+   }
+
+	async saveUser(user: UserDocument): Promise<void> {
+		await user.save();
+	}
+
 }

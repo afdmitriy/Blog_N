@@ -5,6 +5,7 @@ import { Model } from "mongoose";
 import { LikeStatusEnum } from "src/base/models/enums/enums";
 
 
+
 @Injectable()
 export class LikePostRepository {
    constructor(@InjectModel(LikeForPost.name) private LikePostModel: Model<LikePostDocument>) { }

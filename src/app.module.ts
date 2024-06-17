@@ -1,35 +1,60 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserController } from './features/users/api/users.controller';
-import { BlogController } from './features/blogs/api/blog.controller';
-import { PostController } from './features/posts/api/post.controller';
-import { UserService } from './features/users/application/user.service';
-import { BlogService } from './features/blogs/application/blog.service';
-import { PostService } from './features/posts/application/post.service';
-import { UserSchema } from './features/users/domain/user.mongoose.entity';
-import { PostSchema } from './features/posts/domain/post.mongoose.entity';
-import { BlogSchema } from './features/blogs/domain/entities/blog.mongoose.entity';
-import { TestingController } from './features/testing/testing.controller';
-import { UserRepository } from './features/users/infrastructure/user.repository';
-import { UserQueryRepository } from './features/users/infrastructure/user.query.repository';
-import { BlogRepository } from './features/blogs/infrastructure/blog.repository';
-import { BlogQueryRepository } from './features/blogs/infrastructure/blog.query.repository';
-import { PostRepository } from './features/posts/infrastructure/post.repository';
-import { PostQueryRepository } from './features/posts/infrastructure/post.query.repository';
-import { LikePostRepository } from './features/posts/infrastructure/like.post.repository';
+import { MailModule } from './infrastructure/adapters/mailer/mail.module';
+import { BlogsModule } from './features/blogs/blogs.module';
+import { PostsModule } from './features/posts/posts.module';
+import { UsersModule } from './features/users/users.module';
+import { appSettings } from './settings/app.settings';
+import { TestingModule } from './features/testing/testing.module';
+import { LoggerMiddleware } from './infrastructure/middlewares/logger.middleware';
+import { ApiLogRepository } from './features/api.logger/api.logger.repository';
+import { apiLogSchema } from './features/api.logger/api.logger.model';
 import { LikePostSchema } from './features/posts/domain/like.for.post.mongoose.entity';
+import { CqrsModule } from '@nestjs/cqrs';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthController } from './features/auth/api/auth.controller';
+import { AuthService } from './features/auth/application/auth.service';
+import { UserRegistrationUseCase } from './features/auth/application/use-cases/registrate-user.use-case';
+import { UserLoginUseCase } from './features/auth/application/use-cases/login-user.use-case';
+import { LocalStrategy } from './infrastructure/strategies/local.strategy';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
+import { JwtCookieStrategy } from './infrastructure/strategies/jwt.cookie.strategy';
+
+const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017', {dbName: 'blog-nest'}),
-  MongooseModule.forFeature([{ name: 'User', schema: UserSchema }, 
-    { name: 'Blog', schema: BlogSchema },
-    {name: 'Post', schema: PostSchema},
-    {name: 'LikeForPost', schema: LikePostSchema}
-  ])
+  imports: [CqrsModule, PassportModule,
+    JwtModule.register({
+      // secret: jwtConstants.secretAccess,
+      // // Здесь возможна ошибка типа передающегося в константе
+
+      // signOptions: { expiresIn: (jwtConstants.accessExpiresIn) },
+    }),
+    MongooseModule.forRoot(
+      appSettings.env.isTesting()
+      ? appSettings.api.MONGO_URI_FOR_TESTS
+        : appSettings.api.MONGO_URI,
+      ), // 'mongodb://127.0.0.1:27017', {dbName: 'blog-nest'}
+    MongooseModule.forFeature([
+    { name: 'LikeForPost', schema: LikePostSchema },
+    { name: 'ApiLog', schema: apiLogSchema}
+    ]),
+    
+    MailModule,
+    // AuthModule,
+    BlogsModule,
+    PostsModule,
+    UsersModule,
+    TestingModule
   ],
-  controllers: [UserController, BlogController, PostController, TestingController],
-  providers: [UserService, BlogService, PostService, UserRepository, UserQueryRepository, BlogRepository, BlogQueryRepository,
-    PostRepository, PostQueryRepository, LikePostRepository
+  controllers: [AuthController],
+  providers: [ApiLogRepository, AuthService, UserRegistrationUseCase, UserLoginUseCase, ...strategies
+    // LikePostRepository,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware)
+    .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }}

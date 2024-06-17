@@ -11,4 +11,5 @@ export enum ResultStatus {
 	UNAUTHORIZED = 'Unauthorized',
 	BAD_REQUEST = 'BadRequest',
 	SERVER_ERROR = 'ServerError',
+	ALREADY_EXIST = 'AlreadyExist'
 }

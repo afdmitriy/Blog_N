@@ -1,14 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '../application/user.service';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { UserInputModel, UserQueryData, UserSortData} from './models/input/user.input';
 import { UserOutputModel } from './models/output/user.output.model';
 import { ResultStatus } from 'src/base/models/enums/enums';
+import { BasicAuthGuard } from 'src/infrastructure/guards/auth-basic.guard';
 
 @Controller('users')
+@UseGuards(BasicAuthGuard)
 export class UserController {
    constructor(protected readonly userService: UserService, 
-      protected readonly userQueryRepository: UserQueryRepository   //почему readonly?
+      protected readonly userQueryRepository: UserQueryRepository,
    ) {}
 
    @Post('')
@@ -17,7 +19,7 @@ export class UserController {
       if (result.status === ResultStatus.SUCCESS) {
          return result.data!;
       }
-      throw new HttpException('user do not exist', HttpStatus.NOT_FOUND)
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
    @Get('')

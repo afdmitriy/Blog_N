@@ -28,20 +28,6 @@ export class UserQueryRepository {
             { login: { $regex: searchLoginTerm ?? '', $options: 'i' } }]
       };
 
-      // if (searchLoginTerm) {
-      //    filter.login = {
-      //       $regex: searchLoginTerm,
-      //       $options: 'i',
-      //    }
-      // }
-
-      // if (searchEmailTerm) {
-      //    filter.email = {
-      //       $regex: searchEmailTerm,
-      //       $options: 'i',
-      //    }
-      // }
-
       try {
          const users = await this.userModel
             .find(filter)

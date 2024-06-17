@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
 import { LikeStatusEnum } from "src/base/models/enums/enums";
 
-// если лайк снят, то его лучше удалить или изменить статус на none?
 
 
 @Schema()
