@@ -5,8 +5,9 @@ import { BLOG_MODEL_NAME } from "./blog.constants";
 import { Blog, BlogDocument } from "../domain/entities/blog.mongoose.entity";
 import { BlogSortModel } from "../api/models/input/blog.input";
 import { BlogOutputModel } from "../api/models/output/blog.output.models";
-import { PaginationWithItems } from "src/base/models/pagination";
-import { blogMapper } from "src/infrastructure/utils/DB-mappers/blog-mapper";
+import { PaginationWithItems } from "../../../base/models/pagination";
+import { blogMapper } from "../../../infrastructure/utils/DB-mappers/blog-mapper";
+
 
 @Injectable()
 export class BlogQueryRepository {

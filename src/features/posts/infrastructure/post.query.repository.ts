@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { PaginationWithItems } from "src/base/models/pagination"; 
+
 import { POST_MODEL_NAME } from "./post.constants";
 import { PostDocument } from "../domain/post.mongoose.entity";
 import { PostOutputModel } from "../api/models/output/post.output.models";
-import { QuerySortModel } from "src/base/models/input/input.models"; 
-import { postMapper } from "src/infrastructure/utils/DB-mappers/post-mapper";
+import { QuerySortModel } from "../../../base/models/input/input.models";
+import { PaginationWithItems } from "../../../base/models/pagination";
+import { postMapper } from "../../../infrastructure/utils/DB-mappers/post-mapper";
+
 
 
 @Injectable()

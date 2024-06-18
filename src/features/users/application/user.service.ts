@@ -3,9 +3,10 @@ import { UserRepository, } from "../infrastructure/user.repository";
 import { UserCreateModel, UserInputModel } from "../api/models/input/user.input";
 import { User } from "../domain/user.mongoose.entity";
 import { UserOutputModel } from "../api/models/output/user.output.model";
-import { ResultStatus } from "src/base/models/enums/enums";
-import { ResultObjectModel } from "src/base/models/result.object.type";
+
 import bcrypt from 'bcrypt'
+import { ResultObjectModel } from "../../../base/models/result.object.type";
+import { ResultStatus } from "../../../base/models/enums/enums";
 
 
 @Injectable()
@@ -15,6 +16,7 @@ export class UserService {
 
 	async createUser(userData: UserInputModel): Promise<ResultObjectModel<UserOutputModel>> {
 		const userNameIsExist = await this.userRepository.getUserByLoginOrEmail(userData.login)
+		console.log(userNameIsExist)
 		if(userNameIsExist?._id) return {
 			data: null,
 			errorMessage: 'User with this name already exist',

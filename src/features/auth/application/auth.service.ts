@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-
-import { ResultObjectModel } from "src/base/models/result.object.type";
-import { UserService } from "src/features/users/application/user.service";
-import { UserRepository } from "src/features/users/infrastructure/user.repository";
 import bcrypt from 'bcrypt'
 import { JwtService } from "@nestjs/jwt";
-import { User } from "src/features/users/domain/user.mongoose.entity";
 import { v4 as uuidv4 } from 'uuid';
-import { MailService } from "src/infrastructure/adapters/mailer/mail.service";
-import { jwtConstants } from "src/infrastructure/constants/constants";
-import { ResultStatus } from "src/base/models/enums/enums";
+import { UserRepository } from "../../users/infrastructure/user.repository";
+import { UserService } from "../../users/application/user.service";
+import { MailService } from "../../../infrastructure/adapters/mailer/mail.service";
+import { ResultObjectModel } from "../../../base/models/result.object.type";
+import { ResultStatus } from "../../../base/models/enums/enums";
+import { User } from "../../users/domain/user.mongoose.entity";
+import { jwtConstants } from "../../../infrastructure/constants/constants";
+
 
 @Injectable()
 export class AuthService {
@@ -92,12 +92,11 @@ export class AuthService {
 
 
 
-   async validateUser(login: string, password: string): Promise<ResultObjectModel<{ userId: string }>> {
-      console.log('ValidateUser 1')
-      const user = await this.userRepository.getUserByLoginOrEmail(login);
+   async validateUser(loginOrEmail: string, password: string): Promise<ResultObjectModel<{ userId: string }>> {
+      const user = await this.userRepository.getUserByLoginOrEmail(loginOrEmail);
       if (!user) return {
          data: null,
-         errorMessage: 'Login not found',
+         errorMessage: 'Login or email not found',
          status: ResultStatus.NOT_FOUND
       };
       const isPasswordEquals = await bcrypt.compare(password, user.passwordHash);
@@ -121,14 +120,16 @@ export class AuthService {
       const accessToken = await this.jwtService.signAsync({
          userId
       }, {
-         expiresIn: jwtConstants.accessExpiresIn
+         expiresIn: jwtConstants.accessExpiresIn,
+         secret: jwtConstants.secretAccess
       });
       const refreshToken = await this.jwtService.signAsync({
          userId,
          deviceId,
          issuedAt
       }, {
-         expiresIn: jwtConstants.refreshExpiresIn
+         expiresIn: jwtConstants.refreshExpiresIn,
+         secret: jwtConstants.secretRefresh
       })
       return {
          accessToken: accessToken,

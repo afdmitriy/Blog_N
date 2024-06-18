@@ -1,24 +1,24 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Inject, Ip, Post, Res, UseGuards } from "@nestjs/common";
 import { AuthService } from "../application/auth.service";
-import { LocalAuthGuard } from "src/infrastructure/guards/local-auth.guard";
-import { CurrentUserId } from "src/infrastructure/decorators/transform/current-user-id.param.decorator";
-import { UserInputModel } from "src/features/users/api/models/input/user.input";
 import { CommandBus } from "@nestjs/cqrs";
 import { UserRegistrationCommand } from "../application/use-cases/registrate-user.use-case";
-import { JwtAuthGuard } from "src/infrastructure/guards/jwt-auth.guard";
-import { UserService } from "src/features/users/application/user.service";
-import { ResultStatus } from "src/base/models/enums/enums";
 import { UserLoginCommand } from "../application/use-cases/login-user.use-case";
-import { UserAgent } from "src/infrastructure/decorators/transform/user-agent.from.headers.decorator";
 import { Response } from "express";
-import { EmailResendingModel, NewPasswordModel } from "./models/input/auth.input.models";
+import { EmailResendingModel, NewPasswordModel, ValidationCodeModel } from "./models/input/auth.input.models";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery.use-case";
 import { SetNewPasswordCommand } from "../application/use-cases/new-password.use-case";
+import { LocalAuthGuard } from "../../../infrastructure/guards/local-auth.guard";
+import { UserService } from "../../users/application/user.service";
+import { JwtAuthGuard } from "../../../infrastructure/guards/jwt-auth.guard";
+import { CurrentUserId } from "../../../infrastructure/decorators/transform/current-user-id.param.decorator";
+import { ResultStatus } from "../../../base/models/enums/enums";
+import { UserInputModel } from "../../users/api/models/input/user.input";
+import { UserAgent } from "../../../infrastructure/decorators/transform/user-agent.from.headers.decorator";
 
 @Controller('auth')
 export class AuthController {
    constructor(private commandBus: CommandBus,
-      private readonly authService: AuthService,
+      @Inject(AuthService.name) private readonly authService: AuthService,
       private readonly userService: UserService,
    ) {}
 
@@ -46,8 +46,8 @@ export class AuthController {
 
    @Post('registration-confirmation')
    @HttpCode(204)
-   async registrationConfirmation(code: string): Promise<void> {
-      await this.authService.userRegistrationConfirmation(code)
+   async registrationConfirmation(@Body() code: ValidationCodeModel): Promise<void> {
+      await this.authService.userRegistrationConfirmation(code.code)
       return
    }
 
@@ -65,9 +65,12 @@ export class AuthController {
       @UserAgent() deviceName: string,
       @Ip() ip: string, 
       @Res({ passthrough: true }) res: Response,): Promise<{accessToken: string;}> {
-      const tokenPair =  await this.commandBus.execute(new UserLoginCommand(userId, deviceName, ip));
-      res.cookie('refreshToken', tokenPair.refreshToken, { httpOnly: true, secure: true });
-      return {accessToken: tokenPair.accessToken}
+         console.log(userId, " userId")
+      const result =  await this.commandBus.execute(new UserLoginCommand(userId, deviceName, ip));
+       if(result.status === ResultStatus.NOT_FOUND) throw new HttpException(`User not found`, HttpStatus.BAD_REQUEST)
+       res.cookie('refreshToken', result.data.refreshToken, { httpOnly: true, secure: true });
+       console.log('Токен ', result.data.accessToken)
+      return {accessToken: result.data.accessToken}
    }
 
    @Post('password-recovery')

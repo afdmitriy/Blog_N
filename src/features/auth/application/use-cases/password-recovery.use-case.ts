@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { ResultStatus } from "src/base/models/enums/enums";
-import { ResultObjectModel } from "src/base/models/result.object.type";
-import { UserRepository } from "src/features/users/infrastructure/user.repository";
-import { MailService } from "src/infrastructure/adapters/mailer/mail.service";
 import { v4 as uuidv4 } from 'uuid';
+import { UserRepository } from "../../../users/infrastructure/user.repository";
+import { MailService } from "../../../../infrastructure/adapters/mailer/mail.service";
+import { ResultObjectModel } from "../../../../base/models/result.object.type";
+import { ResultStatus } from "../../../../base/models/enums/enums";
 
 export class PasswordRecoveryCommand {
    constructor(public email: string) { }

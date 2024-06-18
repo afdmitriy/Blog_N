@@ -1,7 +1,8 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { ApiLogInputModel } from 'src/features/api.logger/api.logger.model';
-import { ApiLogRepository } from 'src/features/api.logger/api.logger.repository';
+import { ApiLogRepository } from '../../features/api.logger/api.logger.repository';
+import { ApiLogInputModel } from '../../features/api.logger/api.logger.model';
+
 
 
 @Injectable()

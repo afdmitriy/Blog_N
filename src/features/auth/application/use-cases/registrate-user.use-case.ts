@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ResultStatus } from 'src/base/models/enums/enums';
-import { UserInputModel } from 'src/features/users/api/models/input/user.input';
-import { UserService } from 'src/features/users/application/user.service';
-import { MailService } from 'src/infrastructure/adapters/mailer/mail.service';
 import { v4 as uuidv4 } from 'uuid';
+import { UserInputModel } from '../../../users/api/models/input/user.input';
+import { UserService } from '../../../users/application/user.service';
+import { MailService } from '../../../../infrastructure/adapters/mailer/mail.service';
+import { ResultStatus } from '../../../../base/models/enums/enums';
 
 export class UserRegistrationCommand {
   constructor(public userData: UserInputModel) {}

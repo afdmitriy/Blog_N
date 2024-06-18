@@ -1,13 +1,15 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
-import { ResultStatus } from 'src/base/models/enums/enums';
 import { BlogService } from '../application/blog.service';
 import { BlogQueryRepository } from '../infrastructure/blog.query.repository';
 import { BlogInputModel, BlogQueryModel, BlogSortModel } from './models/input/blog.input';
 import { BlogOutputModel } from './models/output/blog.output.models';
-import { PostService } from 'src/features/posts/application/post.service';
-import { QueryPaginationModel } from 'src/base/models/input/input.models';
-import { PostInputModel } from 'src/features/posts/api/models/input/post.input';
-import { PostOutputWithLikesModel } from 'src/features/posts/api/models/output/post.output.models';
+
+// import { ResultStatus } from 'src/base/models/enums/enums';
+import { ResultStatus } from './../../../base/models/enums/enums';
+import { PostService } from '../../posts/application/post.service';
+import { QueryPaginationModel } from '../../../base/models/input/input.models';
+import { PostInputModel } from '../../posts/api/models/input/post.input';
+import { PostOutputWithLikesModel } from '../../posts/api/models/output/post.output.models';
 
 @Controller('blogs')
 export class BlogController {

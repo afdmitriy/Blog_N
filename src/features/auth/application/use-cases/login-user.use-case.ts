@@ -1,10 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ResultStatus } from 'src/base/models/enums/enums';
-import { ResultObjectModel } from 'src/base/models/result.object.type';
-import { UserService } from 'src/features/users/application/user.service';
-import { UserRepository } from 'src/features/users/infrastructure/user.repository';
-import { MailService } from 'src/infrastructure/adapters/mailer/mail.service';
 import { AuthService } from '../auth.service';
+import { Inject } from '@nestjs/common';
+import { UserService } from '../../../users/application/user.service';
+import { UserRepository } from '../../../users/infrastructure/user.repository';
+import { MailService } from '../../../../infrastructure/adapters/mailer/mail.service';
+import { ResultStatus } from '../../../../base/models/enums/enums';
+import { ResultObjectModel } from '../../../../base/models/result.object.type';
 
 export class UserLoginCommand {
    constructor(public userId: string,
@@ -19,7 +20,7 @@ export class UserLoginUseCase implements ICommandHandler<UserLoginCommand> {
       protected userService: UserService,
       protected userRepository: UserRepository,
       protected mailService: MailService,
-      protected authService: AuthService
+      @Inject(AuthService.name) protected authService: AuthService
    ) { }
 
    async execute(command: UserLoginCommand): Promise<ResultObjectModel<{ accessToken: string, refreshToken: string }> | false> {
@@ -33,7 +34,6 @@ export class UserLoginUseCase implements ICommandHandler<UserLoginCommand> {
          user.createSession(command.ip, command.deviceName);
          await this.userRepository.saveUser(user)
          const deviceIdString = user.sessionData._id.toString()
-
          const tokens = await this.authService.generateTokens(command.userId, deviceIdString, user.sessionData.issuedAt);
          return {
             data: tokens,

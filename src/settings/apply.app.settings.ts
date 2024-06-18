@@ -5,8 +5,9 @@ import {
  } from '@nestjs/common';
  import { AppModule } from '../app.module';
  import { useContainer } from 'class-validator';
+import { HttpExceptionFilter } from '../infrastructure/exception-filters/http.exceptoin.filter';
 
-import { HttpExceptionFilter } from 'src/infrastructure/exception-filters/http.exceptoin.filter';
+
 
 
  // Префикс нашего приложения (http://site.com/api)

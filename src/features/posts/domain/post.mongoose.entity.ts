@@ -2,7 +2,8 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { PostCreateModel, PostInputModel } from '../api/models/input/post.input';
 import { PostOutputModel, PostOutputWithLikesModel } from '../api/models/output/post.output.models';
-import { LikeStatusEnum } from 'src/base/models/enums/enums';
+import { LikeStatusEnum } from '../../../base/models/enums/enums';
+
 
 
 export type PostDocument = HydratedDocument<Post>;

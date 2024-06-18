@@ -3,8 +3,8 @@ import { UserService } from '../application/user.service';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { UserInputModel, UserQueryData, UserSortData} from './models/input/user.input';
 import { UserOutputModel } from './models/output/user.output.model';
-import { ResultStatus } from 'src/base/models/enums/enums';
-import { BasicAuthGuard } from 'src/infrastructure/guards/auth-basic.guard';
+import { BasicAuthGuard } from '../../../infrastructure/guards/auth-basic.guard';
+import { ResultStatus } from '../../../base/models/enums/enums';
 
 @Controller('users')
 @UseGuards(BasicAuthGuard)
@@ -19,6 +19,7 @@ export class UserController {
       if (result.status === ResultStatus.SUCCESS) {
          return result.data!;
       }
+      if(result.status === ResultStatus.BAD_REQUEST) throw new HttpException('Login or Email already exist', HttpStatus.BAD_REQUEST)
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

@@ -3,7 +3,8 @@ import { HydratedDocument, Types } from 'mongoose';
 import { UserCreateModel } from '../api/models/input/user.input';
 import { UserOutputModel } from '../api/models/output/user.output.model';
 import { add } from 'date-fns';
-import { jwtConstants } from 'src/infrastructure/constants/constants';
+import { jwtConstants } from '../../../infrastructure/constants/constants';
+
 
 
 @Schema()

@@ -10,27 +10,26 @@ import { LoggerMiddleware } from './infrastructure/middlewares/logger.middleware
 import { ApiLogRepository } from './features/api.logger/api.logger.repository';
 import { apiLogSchema } from './features/api.logger/api.logger.model';
 import { LikePostSchema } from './features/posts/domain/like.for.post.mongoose.entity';
-import { CqrsModule } from '@nestjs/cqrs';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './features/auth/api/auth.controller';
-import { AuthService } from './features/auth/application/auth.service';
-import { UserRegistrationUseCase } from './features/auth/application/use-cases/registrate-user.use-case';
-import { UserLoginUseCase } from './features/auth/application/use-cases/login-user.use-case';
-import { LocalStrategy } from './infrastructure/strategies/local.strategy';
-import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
-import { JwtCookieStrategy } from './infrastructure/strategies/jwt.cookie.strategy';
+import { AuthModule } from './features/auth/auth.module';
+import { NameIsExistConstraint } from './infrastructure/decorators/validate/user-is-exist.decorator';
+import { EmailIsConfirmedConstraint } from './infrastructure/decorators/validate/email-is-confirmed.decorator';
+import { ConfCodeIsValidConstraint } from './infrastructure/decorators/validate/confirmation-code.decorator';
 
-const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
+// const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
+const decorators = [NameIsExistConstraint,
+  EmailIsConfirmedConstraint,
+  ConfCodeIsValidConstraint
+]
 
 @Module({
-  imports: [CqrsModule, PassportModule,
-    JwtModule.register({
-      // secret: jwtConstants.secretAccess,
-      // // Здесь возможна ошибка типа передающегося в константе
+  imports: [
+    // CqrsModule, PassportModule,
+    // JwtModule.register({
+    //   // secret: jwtConstants.secretAccess,
+    //   // // Здесь возможна ошибка типа передающегося в константе
 
-      // signOptions: { expiresIn: (jwtConstants.accessExpiresIn) },
-    }),
+    //   // signOptions: { expiresIn: (jwtConstants.accessExpiresIn) },
+    // }),
     MongooseModule.forRoot(
       appSettings.env.isTesting()
       ? appSettings.api.MONGO_URI_FOR_TESTS
@@ -42,16 +41,23 @@ const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
     ]),
     
     MailModule,
-    // AuthModule,
+    AuthModule,
     BlogsModule,
     PostsModule,
     UsersModule,
     TestingModule
   ],
-  controllers: [AuthController],
-  providers: [ApiLogRepository, AuthService, UserRegistrationUseCase, UserLoginUseCase, ...strategies
+  // controllers: [AuthController],
+  providers: [...decorators,
+  //   {
+  //   provide: AuthService.name,
+  //   useClass: AuthService
+  // },
+    // UserRegistrationUseCase, UserLoginUseCase,
+    ApiLogRepository,
+    //  ...strategies
     // LikePostRepository,
-  ],
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

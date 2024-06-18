@@ -3,8 +3,9 @@ import { BlogRepository } from "../infrastructure/blog.repository";
 import { Blog } from "../domain/entities/blog.mongoose.entity";
 import { BlogOutputModel } from "../api/models/output/blog.output.models";
 import { BlogInputModel } from "../api/models/input/blog.input";
-import { ResultStatus} from "src/base/models/enums/enums";
-import { ResultObjectModel } from "src/base/models/result.object.type";
+import { ResultObjectModel } from "../../../base/models/result.object.type";
+import { ResultStatus } from "../../../base/models/enums/enums";
+
 
 
 @Injectable()

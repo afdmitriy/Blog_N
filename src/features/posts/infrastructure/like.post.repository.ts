@@ -2,7 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { LikeForPost, LikePostDocument } from "../domain/like.for.post.mongoose.entity";
 import { Model } from "mongoose";
-import { LikeStatusEnum } from "src/base/models/enums/enums";
+import { LikeStatusEnum } from "../../../base/models/enums/enums";
+
 
 
 

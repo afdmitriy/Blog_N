@@ -16,7 +16,7 @@ export class UserRepository {
 	}
 
 	async getUserById(userId: string): Promise<UserDocument | null> {
-		const user = await this.userModel.findById(userId);
+		const user = await this.userModel.findOne({ _id: userId });
 		return user || null   
 	}
 // Лучше возвращать UserDocument или можно обычный объект и почему?

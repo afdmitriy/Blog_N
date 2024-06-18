@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
-import { LikeStatusEnum } from "src/base/models/enums/enums";
+import { LikeStatusEnum } from "../../../base/models/enums/enums";
+
 
 
 

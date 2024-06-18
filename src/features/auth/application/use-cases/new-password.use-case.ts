@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { ResultStatus } from "src/base/models/enums/enums";
-import { ResultObjectModel } from "src/base/models/result.object.type";
-import { UserService } from "src/features/users/application/user.service";
-import { UserRepository } from "src/features/users/infrastructure/user.repository";
+import { UserRepository } from "../../../users/infrastructure/user.repository";
+import { UserService } from "../../../users/application/user.service";
+import { ResultObjectModel } from "../../../../base/models/result.object.type";
+import { ResultStatus } from "../../../../base/models/enums/enums";
+
 
 export class SetNewPasswordCommand {
    constructor(public password: string,
@@ -29,7 +30,7 @@ export class SetNewPasswordUseCase implements ICommandHandler<SetNewPasswordComm
          if ((new Date(date) < new Date()) || user.passwordResetData.isConfirmed === true) {
             return {
                data: null,
-               errorMessage: 'Recovery code is expired or ahas already been verified',
+               errorMessage: 'Recovery code is expired or has already been verified',
                status: ResultStatus.FORBIDDEN
             };
          }
