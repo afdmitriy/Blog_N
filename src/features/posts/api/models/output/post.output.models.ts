@@ -1,5 +1,5 @@
 import { PostInputModel } from "../input/post.input";
-import { LikesInfoForPost } from "../likesForPosts/output.likes.for.post";
+import { LikesInfoForPost } from "./output.likes.for.post";
 
 export interface PostOutputModel extends PostInputModel {
    id: string;

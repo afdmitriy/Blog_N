@@ -1,13 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-
 import { POST_MODEL_NAME } from "./post.constants";
 import { PostDocument } from "../domain/post.mongoose.entity";
 import { PostOutputModel } from "../api/models/output/post.output.models";
 import { QuerySortModel } from "../../../base/models/input/input.models";
 import { PaginationWithItems } from "../../../base/models/pagination";
-import { postMapper } from "../../../infrastructure/utils/DB-mappers/post-mapper";
+import { postMapper } from "../../../infrastructure/utils/mappers/post-mapper";
 
 
 
@@ -57,7 +56,7 @@ export class PostQueryRepository {
    }
 
    async findPostsByBlogIdWithQuery(
-      id: string,
+      blogId: string,
       sortData: QuerySortModel
    ): Promise<PaginationWithItems<PostOutputModel>> {
 
@@ -66,18 +65,16 @@ export class PostQueryRepository {
       // let filter = { blogId: id };
 
       const posts = await this.PostModel
-         .find({ blogId: id })
+         .find({ blogId: blogId })
          .sort({ [sortBy]: sortDirection })
          .skip((pageNumber - 1) * pageSize)
          .limit(pageSize)
          .lean()
          .exec()
 
-      const totalCount = await this.PostModel.countDocuments({ blogId: id });
+      const totalCount = await this.PostModel.countDocuments({ blogId: blogId });
 
       const allDtoPosts: PostOutputModel[] = posts.map(postMapper)
-      console.log(allDtoPosts)
-
 
       return new PaginationWithItems(sortData.pageNumber, sortData.pageSize, totalCount, allDtoPosts);
    }

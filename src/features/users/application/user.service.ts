@@ -2,28 +2,25 @@ import { Injectable } from "@nestjs/common";
 import { UserRepository, } from "../infrastructure/user.repository";
 import { UserCreateModel, UserInputModel } from "../api/models/input/user.input";
 import { User } from "../domain/user.mongoose.entity";
+import bcrypt from 'bcrypt';
 import { UserOutputModel } from "../api/models/output/user.output.model";
-
-import bcrypt from 'bcrypt'
 import { ResultObjectModel } from "../../../base/models/result.object.type";
 import { ResultStatus } from "../../../base/models/enums/enums";
 
 
 @Injectable()
 export class UserService {
-	constructor(protected userRepository: UserRepository,
-	) {}
+	constructor(protected userRepository: UserRepository) {}
 
 	async createUser(userData: UserInputModel): Promise<ResultObjectModel<UserOutputModel>> {
 		const userNameIsExist = await this.userRepository.getUserByLoginOrEmail(userData.login)
-		console.log(userNameIsExist)
-		if(userNameIsExist?._id) return {
+		if(userNameIsExist && userNameIsExist._id) return {
 			data: null,
 			errorMessage: 'User with this name already exist',
 			status: ResultStatus.BAD_REQUEST
 		}
 		const userEmailIsExist = await this.userRepository.getUserByLoginOrEmail(userData.email)
-		if(userEmailIsExist?._id) return {
+		if(userEmailIsExist && userEmailIsExist._id) return {
 			data: null,
 			errorMessage: 'User with this email already exist',
 			status: ResultStatus.BAD_REQUEST
@@ -105,6 +102,6 @@ export class UserService {
 	async generateHash(password: string) {
       const hash = await bcrypt.hash(password, 10);
       return hash;
-   }
+	}
 
 }

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PostRepository } from "../infrastructure/post.repository";
+import { PaginationWithItems } from "src/base/models/pagination";
 import { PostOutputWithLikesModel } from "../api/models/output/post.output.models";
 import { PostQueryRepository } from "../infrastructure/post.query.repository";
 import { PostInputModel } from "../api/models/input/post.input";
@@ -8,11 +9,7 @@ import { LikePostRepository } from "../infrastructure/like.post.repository";
 import { BlogRepository } from "../../blogs/infrastructure/blog.repository";
 import { QueryPaginationModel, QuerySortModel } from "../../../base/models/input/input.models";
 import { LikeStatusEnum } from "../../../base/models/enums/enums";
-import { PaginationWithItems } from "../../../base/models/pagination";
 
-
-
-// todo: Отделить квери сервис
 
 @Injectable()
 export class PostService {
@@ -94,7 +91,6 @@ export class PostService {
                newestLikes: []
             }
          })
-         console.log('1', newPosts)
          return newPosts
 
       } catch (error) {
@@ -108,9 +104,7 @@ export class PostService {
       // ): Promise<ResultObjectModel<PostOutputWithLikesModel>> {
    ): Promise<PostOutputWithLikesModel | null> {
       const blog = await this.blogRepository.getBlogById(postData.blogId);
-
       if (!blog) {
-         console.log('блог не найден')
          return null
       } 
 
@@ -119,9 +113,6 @@ export class PostService {
          blogName: blog!.name
       }
       const newPost: Post = new Post(newPostData)
-
-
-
       try {
 
          const post = await this.postRepository.createPost(newPost);
@@ -191,70 +182,4 @@ export class PostService {
       return true
       
    }
-
-   // async postAddLikesInfoMapper(
-   //    post: PaginationWithItems<PostOutputModel>, userId?: string
-   // ): Promise<PaginationWithItems<PostOutputWithLikesModel>> {
-
-   //    const itemsWithLikes = post.items.map(item =>
-   //       this.makeLikesInfo(item.id, userId).then(extendedLikesInfo => ({
-   //          ...item,
-   //          extendedLikesInfo
-   //       }))
-   //    );
-
-   //    // Ожидаем завершения всех промисов
-   //    const items = await Promise.all(itemsWithLikes);
-
-   //    return {
-   //       pagesCount: post.pagesCount,
-   //       page: post.page,
-   //       pageSize: post.pageSize,
-   //       totalCount: post.totalCount,
-   //       items,
-   //    };
-
-   // }
-   // async makeLikesInfo(postId: string, userId?: string): Promise<LikesInfo> {
-   //    const likesCount = await this.likePostRepository.getCountOfLikesByPostId(postId)
-
-   //    const likesInfo = {
-   //       likesCount: likesCount!.likesCount,
-   //       dislikesCount: likesCount!.dislikesCount,
-   //       myStatus: LikeStatusEnum.None,
-   //    }
-   //    if (userId) {
-   //       const likeStatus = await LikePostRepository.findLikeByPostIdAndUserId(postId, userId)
-   //       if (likeStatus) {
-   //          likesInfo.myStatus = likeStatus.likeStatus
-   //       }
-   //    }
-
-   //    const extendedLikesInfo = {
-   //       ...likesInfo,
-   //       newestLikes: []
-   //    }
-
-   //    if (likesCount?.likesCount === 0) {
-   //       return extendedLikesInfo
-   //    }
-
-   //    const newestLikes = await LikePostRepository.findThreeNewestLikesByPostId(postId) as LikePostOutputType[]
-
-   //    const newLikes = newestLikes.map(like => (
-   //       UserRepository.findUserById(like.userId).then(user => ({
-   //          addedAt: like.createdAt,
-   //          userId: like.userId,
-   //          login: user!.login
-   //       }
-   //       ))))
-
-   //    const extendedLikes = await Promise.all(newLikes)
-
-   //    return {
-   //       ...likesInfo,
-   //       newestLikes: extendedLikes
-   //    }
-   // }
-
 }   

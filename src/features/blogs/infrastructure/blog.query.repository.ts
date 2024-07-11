@@ -6,7 +6,7 @@ import { Blog, BlogDocument } from "../domain/entities/blog.mongoose.entity";
 import { BlogSortModel } from "../api/models/input/blog.input";
 import { BlogOutputModel } from "../api/models/output/blog.output.models";
 import { PaginationWithItems } from "../../../base/models/pagination";
-import { blogMapper } from "../../../infrastructure/utils/DB-mappers/blog-mapper";
+import { blogMapper } from "../../../infrastructure/utils/mappers/blog-mapper";
 
 
 @Injectable()

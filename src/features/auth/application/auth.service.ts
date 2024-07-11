@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import bcrypt from 'bcrypt'
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +9,7 @@ import { ResultObjectModel } from "../../../base/models/result.object.type";
 import { ResultStatus } from "../../../base/models/enums/enums";
 import { User } from "../../users/domain/user.mongoose.entity";
 import { jwtConstants } from "../../../infrastructure/constants/constants";
+import { SessionRepository } from "../../security/infrastructure/session.repository";
 
 
 @Injectable()
@@ -16,7 +17,8 @@ export class AuthService {
    constructor(protected readonly userRepository: UserRepository,
       protected readonly userService: UserService,
       protected readonly jwtService: JwtService,
-      protected readonly mailService: MailService
+      protected readonly mailService: MailService,
+      @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository
    ) { }
 
    // async registrateUser(userData: UserInputModel): Promise<boolean> {
@@ -97,7 +99,7 @@ export class AuthService {
       if (!user) return {
          data: null,
          errorMessage: 'Login or email not found',
-         status: ResultStatus.NOT_FOUND
+         status: ResultStatus.UNAUTHORIZED
       };
       const isPasswordEquals = await bcrypt.compare(password, user.passwordHash);
       if (!isPasswordEquals) return {
@@ -108,8 +110,7 @@ export class AuthService {
       const userDto = User.toDto(user)
       return {
          data: { userId: userDto.id },
-         status: ResultStatus.SUCCESS
-         
+         status: ResultStatus.SUCCESS 
       };
    }
 
@@ -137,12 +138,13 @@ export class AuthService {
       }
    }
 
-   async sessionIsValid(userId: string, deviceId: string, issuedAt: string) {
-      const user = await this.userRepository.getUserById(userId);
-      if (!user) return false;
-      if (user.sessionData._id.toString() !== deviceId) return false;
-      if (issuedAt !== user.sessionData.issuedAt) return false;
-
+   async sessionIsValid(userId: string, deviceId: string, issuedAt: string): Promise<boolean> {
+      const session = await this.sessionRepository.findSessionById(deviceId);
+      if (!session) return false;
+      if (session._id.toString() !== deviceId) return false;
+      // Check version as issued at
+      if (issuedAt !== session.issuedAt) return false;
       return true
    }
 } 
+

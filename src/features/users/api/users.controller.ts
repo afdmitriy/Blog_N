@@ -5,6 +5,8 @@ import { UserInputModel, UserQueryData, UserSortData} from './models/input/user.
 import { UserOutputModel } from './models/output/user.output.model';
 import { BasicAuthGuard } from '../../../infrastructure/guards/auth-basic.guard';
 import { ResultStatus } from '../../../base/models/enums/enums';
+import mongoose from 'mongoose';
+
 
 @Controller('users')
 @UseGuards(BasicAuthGuard)
@@ -39,6 +41,7 @@ export class UserController {
    @Delete(':userId')
    @HttpCode(204)
    async deleteUser(@Param('userId') userId: string): Promise<void> {
+      if (!mongoose.Types.ObjectId.isValid(userId)) throw new HttpException(`user do not exist`, HttpStatus.NOT_FOUND);
       const deleteResult = await this.userService.deleteUser(userId);
       if (deleteResult.status === ResultStatus.SUCCESS) return
       throw new HttpException(`user do not exist`, HttpStatus.NOT_FOUND);

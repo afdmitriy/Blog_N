@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod, } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef, } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from './infrastructure/adapters/mailer/mail.module';
 import { BlogsModule } from './features/blogs/blogs.module';
@@ -14,53 +14,62 @@ import { AuthModule } from './features/auth/auth.module';
 import { NameIsExistConstraint } from './infrastructure/decorators/validate/user-is-exist.decorator';
 import { EmailIsConfirmedConstraint } from './infrastructure/decorators/validate/email-is-confirmed.decorator';
 import { ConfCodeIsValidConstraint } from './infrastructure/decorators/validate/confirmation-code.decorator';
+import { PayloadFromJwtMiddleware } from './infrastructure/middlewares/payload-from-jwt.middleware';
+import { CommentsModule } from './features/comments/comment.module';
+import { LikesModule } from './infrastructure/modules/like/like.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { JwtModule } from '@nestjs/jwt';
+import { BlogIsExistConstraint } from './infrastructure/decorators/validate/blog-is-exist.decorator';
+import { SessionsModule } from './features/security/session.module';
 
 // const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
 const decorators = [NameIsExistConstraint,
   EmailIsConfirmedConstraint,
-  ConfCodeIsValidConstraint
+  ConfCodeIsValidConstraint,
+  BlogIsExistConstraint
 ]
 
 @Module({
   imports: [
-    // CqrsModule, PassportModule,
-    // JwtModule.register({
-    //   // secret: jwtConstants.secretAccess,
-    //   // // Здесь возможна ошибка типа передающегося в константе
-
-    //   // signOptions: { expiresIn: (jwtConstants.accessExpiresIn) },
-    // }),
     MongooseModule.forRoot(
       appSettings.env.isTesting()
-      ? appSettings.api.MONGO_URI_FOR_TESTS
+        ? appSettings.api.MONGO_URI_FOR_TESTS
         : appSettings.api.MONGO_URI,
-      ), // 'mongodb://127.0.0.1:27017', {dbName: 'blog-nest'}
+    ), // 'mongodb://127.0.0.1:27017', {dbName: 'blog-nest'}
     MongooseModule.forFeature([
-    { name: 'LikeForPost', schema: LikePostSchema },
-    { name: 'ApiLog', schema: apiLogSchema}
+      { name: 'LikeForPost', schema: LikePostSchema },
+      { name: 'ApiLog', schema: apiLogSchema }
     ]),
-    
+    forwardRef(() => JwtModule),
+    CqrsModule,
     MailModule,
     AuthModule,
     BlogsModule,
     PostsModule,
+    CommentsModule,
     UsersModule,
-    TestingModule
+    TestingModule,
+    LikesModule,
+    SessionsModule
   ],
-  // controllers: [AuthController],
-  providers: [...decorators,
-  //   {
-  //   provide: AuthService.name,
-  //   useClass: AuthService
-  // },
-    // UserRegistrationUseCase, UserLoginUseCase,
-    ApiLogRepository,
-    //  ...strategies
-    // LikePostRepository,
-  ]
+ 
+  providers: [...decorators, ApiLogRepository,
+  ],
+  exports:[CqrsModule]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware)
-    .forRoutes({ path: '*', method: RequestMethod.ALL });
-  }}
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+      
+    consumer.apply(PayloadFromJwtMiddleware)
+      .forRoutes(
+        { path: 'comments/:commentId', method: RequestMethod.GET },
+        { path: 'posts/:postId', method: RequestMethod.GET },
+        { path: 'posts/:postId/comments', method: RequestMethod.GET },
+        { path: 'posts', method: RequestMethod.GET },
+        { path: 'blogs/:blogId/posts', method: RequestMethod.GET },
+      );
+  }
+}
+

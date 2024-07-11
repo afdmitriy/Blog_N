@@ -1,11 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { UsersModule } from '../../src/features/users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { appSettings } from '../../src/settings/app.settings';
 import { applyAppSettings } from '../../src/settings/apply.app.settings';
 import { UserTestManager } from '../common/user.test.manager';
+import { AppModule } from '../../src/app.module';
 
 
 describe('Users e2e test', () => {
@@ -16,12 +14,12 @@ describe('Users e2e test', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [UsersModule,
-        MongooseModule.forRoot(
-          appSettings.env.isTesting()
-          ? appSettings.api.MONGO_URI_FOR_TESTS
-            : appSettings.api.MONGO_URI,
-          )
+      imports: [AppModule,
+        // MongooseModule.forRoot(
+        //   appSettings.env.isTesting()
+        //   ? appSettings.api.MONGO_URI_FOR_TESTS
+        //     : appSettings.api.MONGO_URI,
+        //   )
       ],
     }).compile();
 

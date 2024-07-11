@@ -1,6 +1,6 @@
 import { LikeStatusEnum } from "../enums/enums"
 
-export interface LikesInfo {
+export interface LikesInfoModel {
    likesCount: number
    dislikesCount: number
    myStatus: LikeStatusEnum

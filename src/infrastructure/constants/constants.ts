@@ -4,8 +4,8 @@ dotenv.config();
 export const jwtConstants = {
    secretAccess: process.env.SECRET_KEY_ACCESS_TOKEN || 'staging-secret-A',
    secretRefresh: process.env.SECRET_KEY_REFRESH_TOKEN || 'staging-secret-R',
-   accessExpiresIn: process.env.ACCESS_TOKEN_LIVE_TIME || '5m',
-   refreshExpiresIn: process.env.REFRESH_TOKEN_LIVE_TIME || '30d',
+   accessExpiresIn: process.env.ACCESS_TOKEN_LIVE_TIME || '10s',
+   refreshExpiresIn: process.env.REFRESH_TOKEN_LIVE_TIME || '20s',
 }
 
 export const basicConstants = {

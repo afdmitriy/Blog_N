@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { USER_MODEL_NAME } from "./user.constants";
 import { FilterQuery, Model } from "mongoose";
 import { User, UserDocument } from "../domain/user.mongoose.entity";
 import { UserSortData } from "../api/models/input/user.input";
 import { OutputUsersWithQuery } from "../api/models/output/user.output.model";
-import { USER_MODEL_NAME } from "./user.constants";
-import { userMapper } from "../../../infrastructure/utils/DB-mappers/user.mapper";
+
+
+import { userMapper } from "../../../infrastructure/utils/mappers/user.mapper";
 
 
 @Injectable()
@@ -28,6 +30,20 @@ export class UserQueryRepository {
             { email: { $regex: searchEmailTerm ?? '', $options: 'i' } },
             { login: { $regex: searchLoginTerm ?? '', $options: 'i' } }]
       };
+
+      // if (searchLoginTerm) {
+      //    filter.login = {
+      //       $regex: searchLoginTerm,
+      //       $options: 'i',
+      //    }
+      // }
+
+      // if (searchEmailTerm) {
+      //    filter.email = {
+      //       $regex: searchEmailTerm,
+      //       $options: 'i',
+      //    }
+      // }
 
       try {
          const users = await this.userModel

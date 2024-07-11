@@ -32,9 +32,12 @@ export class ConfCodeIsValidConstraint implements ValidatorConstraintInterface {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async validate(value: any, args: ValidationArguments): Promise<boolean> {
     const userWithCode = await this.userRepository.getUserByConfirmCode(value);
+
     if (!userWithCode) return false;
     const date = Date.parse(userWithCode.emailConfirmation.expirationDate)
+
     if (new Date(date) < new Date()) return false;
+
     if (userWithCode.emailConfirmation.isConfirmed === true) return false;
 
     return true;

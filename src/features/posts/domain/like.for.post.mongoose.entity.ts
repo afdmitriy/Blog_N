@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
 import { LikeStatusEnum } from "../../../base/models/enums/enums";
-
-
+import { LikeForPostCreateModel } from "../api/models/input/like.post.input.model";
 
 
 @Schema()
@@ -18,13 +17,25 @@ export class LikeForPost {
 	@Prop({ required: true })
 	postId: string;
 
-   @Prop({ required: true, default: ()=> new Date() })
-	createdAt: Date; 
+   @Prop({ required: true})
+	createdAt: string; 
 
-   constructor(likeForPost: LikeForPost) {
-      this.likeStatus = likeForPost.likeStatus;
-      this.userId = likeForPost.userId;
-      this.postId = likeForPost.postId;
+   static create(likeForPost: LikeForPostCreateModel) {
+      const likeStatus = new LikeForPost()
+      likeStatus.likeStatus = likeForPost.likeStatus;
+      likeStatus.userId = likeForPost.userId;
+      likeStatus.postId = likeForPost.postId;
+      likeStatus.createdAt = new Date().toISOString()
+      return likeStatus
+   }
+
+   toDto() {
+      return {
+         likeStatus: this.likeStatus,
+         userId: this.userId,
+         postId: this.postId,
+         addedAt: this.createdAt
+      }
    }
 
    updateLikeStatus(likeStatus: LikeStatusEnum) {
@@ -34,3 +45,4 @@ export class LikeForPost {
 
 export type LikePostDocument = HydratedDocument<LikeForPost>;
 export const LikePostSchema = SchemaFactory.createForClass(LikeForPost); 
+LikePostSchema.loadClass(LikeForPost);

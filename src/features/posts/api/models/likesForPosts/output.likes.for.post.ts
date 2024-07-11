@@ -1,6 +1,7 @@
-import { LikesInfo } from "src/base/models/output/likes.info"
+import { LikesInfoModel } from "../../../../../base/models/output/likes.info"
 
-export interface LikesInfoForPost extends LikesInfo {
+
+export interface LikesInfoForPost extends LikesInfoModel {
    newestLikes: newestLikes[]
 }
 

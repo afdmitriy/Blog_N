@@ -13,26 +13,30 @@ import { MailModule } from '../../infrastructure/adapters/mailer/mail.module';
 import { LocalStrategy } from '../../infrastructure/strategies/local.strategy';
 import { JwtStrategy } from '../../infrastructure/strategies/jwt.strategy';
 import { JwtCookieStrategy } from '../../infrastructure/strategies/jwt.cookie.strategy';
+import { RefreshTokensUseCase } from './application/use-cases/refresh-token.use-case';
+import { SessionsModule } from '../security/session.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 // const guards = [BasicAuthGuard, LocalAuthGuard, JwtAuthGuard, JwtCookieGuard]
 const strategies = [LocalStrategy, JwtStrategy, JwtCookieStrategy]
 
 
 @Module({
-  imports: [CqrsModule, UsersModule, MailModule, PassportModule,
-    JwtModule.register({
-      // secret: jwtConstants.secretAccess,
-      // // Здесь возможна ошибка типа передающегося в константе
-
-      // signOptions: { expiresIn: (jwtConstants.accessExpiresIn) },
-    }),
+  imports: [CqrsModule, UsersModule, MailModule, PassportModule, SessionsModule,
+    JwtModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000,
+        limit: 5,
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [ {
     provide: AuthService.name,
     useClass: AuthService
   }, 
-  ...strategies, AuthService, PasswordRecoveryUseCase, UserRegistrationUseCase, UserLoginUseCase, SetNewPasswordUseCase],
+  ...strategies, AuthService, PasswordRecoveryUseCase, UserRegistrationUseCase, UserLoginUseCase, SetNewPasswordUseCase, RefreshTokensUseCase],
   // exports: [AuthService.name]
 })
 export class AuthModule {

@@ -3,9 +3,6 @@ import { HydratedDocument, Types } from 'mongoose';
 import { UserCreateModel } from '../api/models/input/user.input';
 import { UserOutputModel } from '../api/models/output/user.output.model';
 import { add } from 'date-fns';
-import { jwtConstants } from '../../../infrastructure/constants/constants';
-
-
 
 @Schema()
 export class PasswordResetData {
@@ -41,37 +38,19 @@ export class EmailConfirmationData {
 }
 export const EmailConfirmationDataSchema = SchemaFactory.createForClass(EmailConfirmationData); 
 
-@Schema()
-export class SessionData {
-
-	_id: Types.ObjectId;
-
-	@Prop({ required: true })
-	deviceName: string | 'Unknown';
-
-	@Prop({ required: true })
-	ip: string | 'Unknown';
-
-	@Prop({ required: true })
-	issuedAt: string;
-
-	@Prop({ required: true })
-	expirationDate: string;
-}
-export const SessionDataShema = SchemaFactory.createForClass(SessionData)
 
 @Schema()
 export class User {
 
-	_id: Types.ObjectId;
+	_id: Types.ObjectId
 
-	@Prop({ required: true, minlength: 3, maxlength: 10 })
+	@Prop({ required: true })
 	login: string;
 
 	@Prop({ required: true })
 	email: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: ()=> new Date().toISOString() })
 	createdAt: string
 
 	@Prop({ required: true })
@@ -79,11 +58,8 @@ export class User {
 
 	@Prop({ _id: false, required: false, type: EmailConfirmationDataSchema })
    emailConfirmation: EmailConfirmationData;
-	
-	@Prop({required: false, type: SessionDataShema})
-	sessionData: SessionData
 
-	@Prop({required: false, type: SessionDataShema})
+	@Prop({required: false, type: PasswordResetDataSchema})
 	passwordResetData: PasswordResetData
 
 	constructor(userInput: UserCreateModel) {     
@@ -92,6 +68,7 @@ export class User {
 		this.passwordHash = userInput.passwordHash;
 		this.createdAt = new Date().toISOString();
 	}
+
 	static toDto(user: UserDocument): UserOutputModel {
 		return {
 			id: user._id.toString(),
@@ -123,19 +100,6 @@ export class User {
 		}
 	}
 
-	createSession(ip?: string, deviceName?: string) {
-		const duration = parseInt(jwtConstants.refreshExpiresIn.slice(0, -1));
-		this.sessionData = {
-			_id: new Types.ObjectId(),
-			deviceName: deviceName ?? 'Unknown',
-			ip: ip || 'Unknown',
-			issuedAt: new Date().toISOString(),
-			expirationDate: add(new Date(), {
-				days: duration
-			}).toISOString()
-		}
-	}
-
 	confirmEmail() {
 		this.emailConfirmation.isConfirmed = true
 	}
@@ -144,8 +108,8 @@ export class User {
 		this.passwordHash = passwordHash
 	}
 }
-export const UserSchema = SchemaFactory.createForClass(User); 
 
+export const UserSchema = SchemaFactory.createForClass(User); 
 // export const UserModel = model<User>('User', UserSchema);
 export type UserDocument = HydratedDocument<User>;
 UserSchema.loadClass(User); 

@@ -6,6 +6,3 @@ export const CurrentUserId = createParamDecorator((data: unknown, context: Execu
   return request.user ?? null;
 });
 
-
-
-//ДЕЛАЙ ДЕКОРАТОРЫ ЧОБЫ ОШИБКИ ВАЛИЛИС В НУЖНОМ ФОРМАТЕ

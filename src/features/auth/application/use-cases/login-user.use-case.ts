@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../auth.service';
 import { Inject } from '@nestjs/common';
-import { UserService } from '../../../users/application/user.service';
 import { UserRepository } from '../../../users/infrastructure/user.repository';
-import { MailService } from '../../../../infrastructure/adapters/mailer/mail.service';
 import { ResultStatus } from '../../../../base/models/enums/enums';
 import { ResultObjectModel } from '../../../../base/models/result.object.type';
+import { Session } from '../../../security/domain/session.mongoose.entity';
+import { SessionRepository } from '../../../security/infrastructure/session.repository';
 
 export class UserLoginCommand {
    constructor(public userId: string,
@@ -17,9 +17,8 @@ export class UserLoginCommand {
 @CommandHandler(UserLoginCommand)
 export class UserLoginUseCase implements ICommandHandler<UserLoginCommand> {
    constructor(
-      protected userService: UserService,
       protected userRepository: UserRepository,
-      protected mailService: MailService,
+      @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository,
       @Inject(AuthService.name) protected authService: AuthService
    ) { }
 
@@ -31,10 +30,11 @@ export class UserLoginUseCase implements ICommandHandler<UserLoginCommand> {
             errorMessage: 'User not found',
             status: ResultStatus.NOT_FOUND
          }
-         user.createSession(command.ip, command.deviceName);
-         await this.userRepository.saveUser(user)
-         const deviceIdString = user.sessionData._id.toString()
-         const tokens = await this.authService.generateTokens(command.userId, deviceIdString, user.sessionData.issuedAt);
+         const session = Session.createSession(command.userId,command.ip, command.deviceName);
+         const newSession = await this.sessionRepository.createSession(session)
+         
+         const deviceIdString = newSession._id.toString()
+         const tokens = await this.authService.generateTokens(command.userId, deviceIdString, session.issuedAt);
          return {
             data: tokens,
             status: ResultStatus.SUCCESS

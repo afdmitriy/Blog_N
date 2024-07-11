@@ -6,13 +6,15 @@ import { BlogRepository } from "./infrastructure/blog.repository";
 import { BlogSchema } from "./domain/entities/blog.mongoose.entity";
 import { MongooseModule } from "@nestjs/mongoose";
 import { PostsModule } from "../posts/posts.module";
+import { CqrsModule } from "@nestjs/cqrs";
 
 @Module({
    imports: [MongooseModule.forFeature([{ name: 'Blog', schema: BlogSchema }]),
-   forwardRef(() => PostsModule)],
+   forwardRef(() => PostsModule),
+   CqrsModule],
    controllers: [BlogController],
    providers: [BlogService, BlogQueryRepository, BlogRepository],
-   exports: [BlogRepository]
+   exports: [BlogRepository, BlogQueryRepository]
 })
 export class BlogsModule {
 }
