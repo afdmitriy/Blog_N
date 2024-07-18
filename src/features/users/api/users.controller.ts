@@ -8,7 +8,7 @@ import { ResultStatus } from '../../../base/models/enums/enums';
 import mongoose from 'mongoose';
 
 
-@Controller('users')
+@Controller('sa/users')
 @UseGuards(BasicAuthGuard)
 export class UserController {
    constructor(protected readonly userService: UserService, 

@@ -21,31 +21,6 @@ export class AuthService {
       @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository
    ) { }
 
-   // async registrateUser(userData: UserInputModel): Promise<boolean> {
-   //    const token = uuidv4();
-   //    try {
-   //       const newUser = await this.userService.createUser(userData);
-   //       if (newUser.status !== ResultStatus.SUCCESS) {
-   //          return false;
-   //       }
-   //       const isCreate = await this.userService.createConfirmData(
-   //          newUser.data!.id,
-   //          token
-   //       );
-   //       if (!isCreate) {
-   //          console.log('Error: authService.userRegistration, isCreate');
-   //          return false;
-   //       }
-
-   //       await this.mailService.sendUserConfirmation(userData.email, userData.login, token)
-
-   //       return true;
-   //    } catch (error) {
-   //       console.log(error);
-   //       return false;
-   //    }
-   // }
-
    async resendEmail(mail: string): Promise<boolean | null> {
       const token = uuidv4();
       try {

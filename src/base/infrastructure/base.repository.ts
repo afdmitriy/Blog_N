@@ -1,3 +1,5 @@
+// import { DataSource, EntityManager, EntityTarget } from "typeorm";
+
 // export abstract class BaseRepository {
 //    protected constructor(protected readonly dataSource: DataSource) {}
 
