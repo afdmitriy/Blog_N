@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { PostCreateModel, PostInputModel } from '../api/models/input/post.input';
+import { PostCreateModel, PostWithoutBlogInputModel } from '../api/models/input/post.input';
 import { PostOutputModel, PostOutputWithLikesModel } from '../api/models/output/post.output.models';
 import { LikeStatusEnum } from '../../../base/models/enums/enums';
 
@@ -74,11 +74,10 @@ export class Post {
 		}
 	}
 
-	updatePost(params: PostInputModel): void {
+	updatePost(params: PostWithoutBlogInputModel): void {
 		this.title = params.title;
 		this.shortDescription = params.shortDescription;
 		this.content = params.content;
-		this.blogId = params.blogId;
 	}
 }
 export const PostSchema = SchemaFactory.createForClass(Post); 

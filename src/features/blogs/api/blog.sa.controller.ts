@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BlogService } from '../application/blog.service';
 import { BlogQueryRepository } from '../infrastructure/blog.query.repository';
 import { BlogInputModel, BlogQueryModel, BlogSortModel } from './models/input/blog.input';
@@ -74,8 +74,31 @@ export class BlogSuperAdminController {
       throw new HttpException('blog does not created', HttpStatus.INTERNAL_SERVER_ERROR)
    }
 
+   
+   
+   @Put(':blogId')
+   @UseGuards(BasicAuthGuard)
+   @HttpCode(204)
+   async updateBlog(@Param('blogId') blogId: string, @Body() inputBlog: BlogInputModel): Promise<void> {
+      if (!mongoose.Types.ObjectId.isValid(blogId)) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
+      const updateResult = await this.blogService.updateBlog(blogId, inputBlog);
+      if (updateResult) return
+      throw new HttpException(`blog does not exist`, HttpStatus.NOT_FOUND);
+   }
+   
+   @Delete(':blogId')
+   @UseGuards(BasicAuthGuard)
+   @HttpCode(204)
+   async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+      if (!mongoose.Types.ObjectId.isValid(blogId)) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
+      const deleteResult = await this.blogService.deleteBlog(blogId);
+      if (!deleteResult) throw new HttpException(`blog does not exist`, HttpStatus.NOT_FOUND);
+      return
+   }
+
    @Post(':blogId/posts')
    @UseGuards(BasicAuthGuard)
+   @HttpCode(201)
    async createPostByBlogId(@Body() postData: PostWithoutBlogInputModel,
       @Param('blogId') blogId: string): Promise<PostOutputWithLikesModel | null> {
       if (!mongoose.Types.ObjectId.isValid(blogId)) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
@@ -89,24 +112,32 @@ export class BlogSuperAdminController {
       throw new HttpException(`Server error`, HttpStatus.INTERNAL_SERVER_ERROR)
    }
 
-
-   @Put(':blogId')
+   @Put(':blogId/posts/:postId')
    @UseGuards(BasicAuthGuard)
    @HttpCode(204)
-   async updateBlog(@Param('blogId') blogId: string, @Body() inputBlog: BlogInputModel): Promise<void> {
+   async updatePost(@Param('postId') postId: string, @Param('blogId') blogId: string,
+      @Body() postData: PostWithoutBlogInputModel): Promise<void> {
+      if (!mongoose.Types.ObjectId.isValid(postId)) throw new HttpException(`Post do not exist`, HttpStatus.NOT_FOUND);
       if (!mongoose.Types.ObjectId.isValid(blogId)) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
-      const updateResult = await this.blogService.updateBlog(blogId, inputBlog);
-      if (updateResult) return
-      throw new HttpException(`blog does not exist`, HttpStatus.NOT_FOUND);
+      const blog = await this.blogQueryRepository.getBlogById(blogId);
+      if (!blog) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
+      const res = await this.postService.updatePost(postId, postData)
+      if (!res) throw new NotFoundException('Post Not Found');
+      return;
+
    }
 
-   @Delete(':blogId')
+   @Delete(':blogId/posts/:postId')
    @UseGuards(BasicAuthGuard)
    @HttpCode(204)
-   async deleteBlog(@Param('blogId') blogId: string): Promise<void> {
+   async deletePost(@Param('postId') postId: string, @Param('blogId') blogId: string,) {
+      if (!mongoose.Types.ObjectId.isValid(postId)) throw new HttpException(`Post do not exist`, HttpStatus.NOT_FOUND);
       if (!mongoose.Types.ObjectId.isValid(blogId)) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
-      const deleteResult = await this.blogService.deleteBlog(blogId);
-      if (!deleteResult) throw new HttpException(`blog does not exist`, HttpStatus.NOT_FOUND);
-      return
+      const blog = await this.blogQueryRepository.getBlogById(blogId);
+      if (!blog) throw new HttpException(`Blog do not exist`, HttpStatus.NOT_FOUND);
+      const delteResult = await this.postService.deletePost(postId);
+      if (!delteResult) throw new NotFoundException('Post Not Found');
+      return;
    }
+
 }

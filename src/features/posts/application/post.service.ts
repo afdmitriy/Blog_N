@@ -3,7 +3,7 @@ import { PostRepository } from "../infrastructure/post.repository";
 import { PaginationWithItems } from "src/base/models/pagination";
 import { PostOutputWithLikesModel } from "../api/models/output/post.output.models";
 import { PostQueryRepository } from "../infrastructure/post.query.repository";
-import { PostInputModel } from "../api/models/input/post.input";
+import { PostInputModel, PostWithoutBlogInputModel } from "../api/models/input/post.input";
 import { Post, PostDocument } from "../domain/post.mongoose.entity";
 import { LikePostRepository } from "../infrastructure/like.post.repository";
 import { BlogRepository } from "../../blogs/infrastructure/blog.repository";
@@ -135,9 +135,7 @@ export class PostService {
       }
    }
 
-   // async getPostWithLikes(postId: string, userId?: string) {
    async getPostWithLikes(postId: string) {
-      // : Promise<ResultObjectModel<PostOutputWithLikesModel>>
       const post = await this.postRepository.getPostById(postId);
       if (!post) {
          return null;
@@ -152,17 +150,9 @@ export class PostService {
             newestLikes: []
          }
       }
-
-      // const likesInfo = await this.makeLikesInfo(postId, userId)
-
-      // return {
-      //    ...post,
-      //    extendedLikesInfo: likesInfo
-      // }
-
    }
 
-   async updatePost(postId: string, postData: PostInputModel): Promise<true | null> {
+   async updatePost(postId: string, postData: PostWithoutBlogInputModel): Promise<true | null> {
       const targetPost: PostDocument | null = await this.postRepository.getPostById(postId);
       if (!targetPost) return null;
   
