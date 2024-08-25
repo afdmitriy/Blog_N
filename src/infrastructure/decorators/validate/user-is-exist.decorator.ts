@@ -7,9 +7,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UserRepository } from '../../../features/users/infrastructure/user.repository';
-
-
+import { UserRepository } from '../../../features/users/infrastructure/user.typeOrm.repository';
 
 export function NameIsExist(property?: string, validationOptions?: ValidationOptions) {
   
@@ -28,16 +26,16 @@ export function NameIsExist(property?: string, validationOptions?: ValidationOpt
 @ValidatorConstraint({ name: 'NameIsExist', async: false })
 @Injectable()
 export class NameIsExistConstraint implements ValidatorConstraintInterface {
-  constructor(@Inject(UserRepository) private readonly userRepository: UserRepository) {}
+  constructor(@Inject(UserRepository.name) private readonly userRepository: UserRepository) {}
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   async validate(value: any, args: ValidationArguments) {
-    const nameIsExist = await this.userRepository.getUserByLoginOrEmail(value);
+    const nameIsExist = await this.userRepository.getByLoginOrEmail(value);
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return !!!nameIsExist;
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return 'Name already exist';
+    return 'Name or email already exist';
   }
 }

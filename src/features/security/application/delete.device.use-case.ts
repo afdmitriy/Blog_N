@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { SessionRepository } from "../infrastructure/session.repository";
 import { ResultObjectModel } from "../../../base/models/result.object.type";
 import { ResultStatus } from "../../../base/models/enums/enums";
 import { Inject } from "@nestjs/common";
+import { SessionRepository } from "../infrastructure/session.typeOrm.repository";
 
 export class DeviceDeleteCommand {
    constructor(public userId: string,
@@ -16,7 +16,7 @@ export class DeviceDeleteUseCase implements ICommandHandler<DeviceDeleteCommand>
       @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository
    ) {}
    async execute(command: DeviceDeleteCommand): Promise<ResultObjectModel<null>> {
-      const session = await this.sessionRepository.findSessionById(command.deviceId)
+      const session = await this.sessionRepository.getById(command.deviceId)
       if (!session) return {
          data: null,
          errorMessage: 'Session not found',
@@ -27,11 +27,7 @@ export class DeviceDeleteUseCase implements ICommandHandler<DeviceDeleteCommand>
          errorMessage: 'Forbidden',
          status: ResultStatus.FORBIDDEN
       }
-      const res = await this.sessionRepository.deleteSessionById(command.deviceId)
-      if (!res) return {
-         data: null,
-         status: ResultStatus.SERVER_ERROR
-      }
+      await this.sessionRepository.deleteById(command.deviceId)
       return {
          data: null,
          status: ResultStatus.SUCCESS

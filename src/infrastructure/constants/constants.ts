@@ -21,4 +21,8 @@ export const mailerConstants = {
 
 export const MONGO_URI = process.env.MONGO_URL || "mongodb://localhost:27017/blog-nest"
 export const MONGO_URI_FOR_TESTS = process.env.MONGO_URL_FOR_TESTS || "mongodb://localhost:27017/blog-nest-test"
+
+export const POSTGRES_URI = process.env.POSTGRES_URL || "mongodb://localhost:27017/blog-nest"
+export const POSTGRES_URI_FOR_TESTS = process.env.POSTGRES_URL_FOR_TESTS || "mongodb://localhost:27017/blog-nest-test"
+
 export const PORT = process.env.PORT || 3000;

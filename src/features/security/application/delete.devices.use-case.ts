@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { SessionRepository } from "../infrastructure/session.repository";
 import { ResultObjectModel } from "../../../base/models/result.object.type";
 import { ResultStatus } from "../../../base/models/enums/enums";
 import { Inject } from "@nestjs/common";
+import { SessionRepository } from "../infrastructure/session.typeOrm.repository";
 
 export class DevicesDeleteCommand {
    constructor(
@@ -17,11 +17,8 @@ export class DevicesDeleteUseCase implements ICommandHandler<DevicesDeleteComman
       @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository
    ) {}
    async execute(command: DevicesDeleteCommand): Promise<ResultObjectModel<null>> {
-      const res = await this.sessionRepository.deleteSessionsExcludeId(command.deviceId, command.userId)
-      if (!res) return {
-         data: null,
-         status: ResultStatus.SERVER_ERROR
-      }
+      await this.sessionRepository.deleteSessionsExcludeId(command.deviceId, command.userId)
+
       return {
          data: null,
          status: ResultStatus.SUCCESS

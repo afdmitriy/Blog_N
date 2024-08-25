@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
 import { UsersModule } from "../users/users.module";
 import { SecurityController } from "./api/security.controller";
-import { SessionRepository } from "./infrastructure/session.repository";
-import { SessionQueryRepository } from "./infrastructure/session.query.repository";
 import { DeviceDeleteUseCase } from "./application/delete.device.use-case";
 import { DevicesDeleteUseCase } from "./application/delete.devices.use-case";
-import { GetDevicesUseCase } from "./application/get.devices.use-case";
-import { MongooseModule } from "@nestjs/mongoose";
-import { Session, SessionShema } from "./domain/session.mongoose.entity";
 import { CqrsModule } from "@nestjs/cqrs";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Session_Orm } from "./domain/session.typeOrm.entity";
+import { SessionRepository } from "./infrastructure/session.typeOrm.repository";
+import { SessionQueryRepository } from "./infrastructure/session.typeOrm.query.repository";
 
 @Module({
    imports: [CqrsModule, UsersModule,
-      MongooseModule.forFeature([{ name: Session.name, schema: SessionShema }])
+      // MongooseModule.forFeature([{ name: Session.name, schema: SessionShema }]),
+      TypeOrmModule.forFeature([Session_Orm]),
    ],
    controllers: [SecurityController],
    providers: [{
@@ -23,7 +23,7 @@ import { CqrsModule } from "@nestjs/cqrs";
       provide: SessionQueryRepository.name,
       useClass: SessionQueryRepository
    },
-   DeviceDeleteUseCase, DevicesDeleteUseCase, GetDevicesUseCase
+   DeviceDeleteUseCase, DevicesDeleteUseCase
    ],
    exports: [SessionRepository.name, DeviceDeleteUseCase]
 })

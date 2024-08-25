@@ -7,9 +7,8 @@ import { useContainer } from 'class-validator';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  //Выносим неастройки для удобства тестов
+  //Выносим настройки для удобства тестов
   applyAppSettings(app)
-  
   await app.listen(PORT);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

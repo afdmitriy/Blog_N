@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/ban-types */
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   registerDecorator,
   ValidationArguments,
@@ -7,7 +7,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { UserRepository } from '../../../features/users/infrastructure/user.repository';
+import { UserRepository } from '../../../features/users/infrastructure/user.typeOrm.repository';
+
 
 
 export function ConfCodeIsValid(property?: string, validationOptions?: ValidationOptions) {
@@ -27,18 +28,17 @@ export function ConfCodeIsValid(property?: string, validationOptions?: Validatio
 @ValidatorConstraint({ name: 'ConfCodeIsValid', async: false })
 @Injectable()
 export class ConfCodeIsValidConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(@Inject(UserRepository.name) private readonly userRepository: UserRepository) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async validate(value: any, args: ValidationArguments): Promise<boolean> {
-    const userWithCode = await this.userRepository.getUserByConfirmCode(value);
+    const userWithCode = await this.userRepository.getByConfirmationCode(value);
 
     if (!userWithCode) return false;
-    const date = Date.parse(userWithCode.emailConfirmation.expirationDate)
 
-    if (new Date(date) < new Date()) return false;
+    if (userWithCode.codeExpirationDate < new Date()) return false;
 
-    if (userWithCode.emailConfirmation.isConfirmed === true) return false;
+    if (userWithCode.isConfirmed === true) return false;
 
     return true;
   }

@@ -6,9 +6,8 @@ import { UserLoginCommand } from "../application/use-cases/login-user.use-case";
 import { Response } from "express";
 import { EmailResendingModel, NewPasswordModel, ValidationCodeModel } from "./models/input/auth.input.models";
 import { PasswordRecoveryCommand } from "../application/use-cases/password-recovery.use-case";
-import { SetNewPasswordCommand } from "../application/use-cases/new-password.use-case";
+import { SetNewPasswordCommand } from "../application/use-cases/set-new-password.use-case";
 import { LocalAuthGuard } from "../../../infrastructure/guards/local-auth.guard";
-import { UserService } from "../../users/application/user.service";
 import { JwtAuthGuard } from "../../../infrastructure/guards/jwt-auth.guard";
 import { CurrentUserId } from "../../../infrastructure/decorators/transform/current-user-id.param.decorator";
 import { ResultStatus } from "../../../base/models/enums/enums";
@@ -19,25 +18,27 @@ import { RefreshCookieInputModel } from "../../security/api/models/input/refresh
 import { DeviceDeleteCommand } from "../../security/application/delete.device.use-case";
 import { RefreshTokensCommand } from "../application/use-cases/refresh-token.use-case";
 import { ThrottlerGuard } from "@nestjs/throttler";
+import { UserRepository } from "../../users/infrastructure/user.typeOrm.repository";
+import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation.use-case";
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
    constructor(private commandBus: CommandBus,
       @Inject(AuthService.name) private readonly authService: AuthService,
-      private readonly userService: UserService,
+      @Inject(UserRepository.name) private readonly userRepository: UserRepository,
    ) { }
 
    @Get('me')
    @UseGuards(JwtAuthGuard)
    @HttpCode(200)
    async getMe(@CurrentUserId() userId: string): Promise<{ email: string; login: string; userId: string; }> {
-      const user = await this.userService.getUserById(userId)
-      if (user.status !== ResultStatus.SUCCESS) throw new HttpException(`user do not exist`, HttpStatus.NOT_FOUND);
+      const user = await this.userRepository.getById(userId)
+      if (!user) throw new HttpException(`user do not exist`, HttpStatus.NOT_FOUND);
       const outputUser = {
-         email: user.data!.email,
-         login: user.data!.login,
-         userId: user.data!.id
+         email: user.email,
+         login: user.login,
+         userId: user.id.toString()
       }
       return outputUser
    }
@@ -52,8 +53,9 @@ export class AuthController {
 
    @Post('registration-confirmation')
    @HttpCode(204)
-   async registrationConfirmation(@Body() code: ValidationCodeModel): Promise<void> {
-      await this.authService.userRegistrationConfirmation(code.code)
+   async registrationConfirmation(@Body() body: ValidationCodeModel): Promise<void> {
+      const res = await this.commandBus.execute(new RegistrationConfirmationCommand(body.code));
+      if (res.status !== ResultStatus.SUCCESS) throw new HttpException(`The confirmation code is incorrect, expired or already been applied`, HttpStatus.BAD_REQUEST)
       return
    }
 
@@ -71,6 +73,7 @@ export class AuthController {
       @UserAgent() deviceName: string,
       @Ip() ip: string,
       @Res({ passthrough: true }) res: Response,): Promise<{ accessToken: string }> {
+         
       const result = await this.commandBus.execute(new UserLoginCommand(userId, deviceName, ip));
       if (result.status === ResultStatus.NOT_FOUND) throw new HttpException(`User not found`, HttpStatus.BAD_REQUEST)
       res.cookie('refreshToken', result.data.refreshToken, { httpOnly: true, secure: true });
@@ -86,7 +89,9 @@ export class AuthController {
    @Post('new-password')
    @HttpCode(204)
    async setNewPassword(@Body() body: NewPasswordModel): Promise<void> {
-      await this.commandBus.execute(new SetNewPasswordCommand(body.newPassword, body.recoveryCode))
+      const res = await this.commandBus.execute(new SetNewPasswordCommand(body.newPassword, body.recoveryCode))
+      if (res.status !== ResultStatus.SUCCESS) throw new HttpException(`InputModel has incorrect value (for incorrect password length) or RecoveryCode is incorrect or expired`, HttpStatus.BAD_REQUEST)
+      return
    }
 
    @Post('logout')

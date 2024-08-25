@@ -48,6 +48,8 @@ class APISettings {
   // Database
   public readonly MONGO_URI: string;
   public readonly MONGO_URI_FOR_TESTS: string;
+  public readonly POSTGRES_URI: string;
+  public readonly POSTGRES_URI_FOR_TESTS: string;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -58,6 +60,11 @@ class APISettings {
       envVariables.MONGO_URI ?? 'mongodb://localhost/blog-nest';
     this.MONGO_URI_FOR_TESTS =
       envVariables.MONGO_URI_FOR_TESTS ?? 'mongodb://localhost/blog-test';
+    this.POSTGRES_URI =
+      envVariables.POSTGRES_URI ?? "postgres://postgres/777666@localhost:5432/blog-nest-db"
+    this.POSTGRES_URI_FOR_TESTS =
+      envVariables.POSTGRES_URI_FOR_TESTS ?? 'postgres://postgres/777666@localhost:5432/blog-nest-test'; 
+  
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {   

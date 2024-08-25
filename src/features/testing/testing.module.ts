@@ -1,22 +1,23 @@
 import { Module } from "@nestjs/common";
 import { TestingController } from "./testing.controller";
-import { MongooseModule } from "@nestjs/mongoose";
-import { BlogSchema } from "../blogs/domain/entities/blog.mongoose.entity";
-import { PostSchema } from "../posts/domain/post.mongoose.entity";
-import { UserSchema } from "../users/domain/user.mongoose.entity";
-import { Comment, CommentSchema } from "../comments/domain/comment.mongoose.entity";
-import { LikeCommentSchema, LikeForComment } from "../comments/domain/like.for.comment.mongoose.entity";
-import { LikeForPost, LikePostSchema } from "../posts/domain/like.for.post.mongoose.entity";
-import { Session, SessionShema } from "../security/domain/session.mongoose.entity";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User_Orm } from "../users/domain/user.typeOrm.entity";
+import { Session_Orm } from "../security/domain/session.typeOrm.entity";
+import { PasswordResetData } from "../auth/domain/recovery.password.data.entity";
+
 
 @Module({
-   imports: [MongooseModule.forFeature([{ name: 'Blog', schema: BlogSchema }]),
-   MongooseModule.forFeature([{ name: 'Post', schema: PostSchema }]),
-   MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-   MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
-   MongooseModule.forFeature([{ name: LikeForComment.name, schema: LikeCommentSchema }]),
-   MongooseModule.forFeature([{ name: LikeForPost.name, schema: LikePostSchema }]),
-   MongooseModule.forFeature([{ name: Session.name, schema: SessionShema }])
+   imports: [
+      TypeOrmModule.forFeature([User_Orm, Session_Orm, PasswordResetData
+         //  Blog_Orm, Post_Orm, Comment_Orm, Comment_like_Orm, Post_like_Orm
+         ])
+   // MongooseModule.forFeature([{ name: 'Blog', schema: BlogSchema }]),
+   // MongooseModule.forFeature([{ name: 'Post', schema: PostSchema }]),
+   // MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+   // MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+   // MongooseModule.forFeature([{ name: LikeForComment.name, schema: LikeCommentSchema }]),
+   // MongooseModule.forFeature([{ name: LikeForPost.name, schema: LikePostSchema }]),
+   // MongooseModule.forFeature([{ name: Session.name, schema: SessionShema }])
    ],
    controllers: [TestingController],
 })

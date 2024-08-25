@@ -4,14 +4,14 @@ import { LikeStatusEnum } from "../enums/enums";
 
 export interface QueryPaginationModel {
 	sortBy?: string;
-	sortDirection?: 'asc' | 'desc';
+	sortDirection?: 'ASC' | 'DESC';
 	pageNumber?: string;
 	pageSize?: string;
 }
 
 export interface QuerySortModel {
 	sortBy: string;
-   sortDirection: 'desc' | 'asc';
+   sortDirection: 'DESC' | 'ASC';
    pageNumber: number;
    pageSize: number;
 }

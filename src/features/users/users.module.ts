@@ -1,17 +1,31 @@
 import { Module } from "@nestjs/common";
 import { UserController } from "./api/users.controller";
 import { UserService } from "./application/user.service";
-import { UserRepository } from "./infrastructure/user.repository";
-import { UserQueryRepository } from "./infrastructure/user.query.repository";
-import { MongooseModule } from "@nestjs/mongoose";
-import { UserSchema } from "./domain/user.mongoose.entity";
+import { UserQueryRepository } from "./infrastructure/user.typeOrm.query.repository";
+import { UserRepository } from "./infrastructure/user.typeOrm.repository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User_Orm } from "./domain/user.typeOrm.entity";
+import { CqrsModule } from "@nestjs/cqrs";
+import { UserCreateUseCase } from "./application/user.create.use-case";
+import { UserDeleteUseCase } from "./application/user.delete.use-case";
 
 @Module({
-   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+   imports: [CqrsModule,
+      // MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+      TypeOrmModule.forFeature([User_Orm])],
    controllers: [UserController],
-   providers: [UserService, UserRepository, UserQueryRepository,
+   providers: [
+      {
+         provide: UserRepository.name,
+         useClass: UserRepository
+      },
+      {
+         provide: UserQueryRepository.name,
+         useClass: UserQueryRepository
+      },
+      UserService, UserCreateUseCase, UserDeleteUseCase
    ],
-   exports:[UserService, UserRepository]
+   exports: [UserService, UserRepository.name]
 })
 export class UsersModule {
 }

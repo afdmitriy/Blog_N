@@ -1,11 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../auth.service';
 import { Inject } from '@nestjs/common';
-import { UserRepository } from '../../../users/infrastructure/user.repository';
 import { ResultStatus } from '../../../../base/models/enums/enums';
 import { ResultObjectModel } from '../../../../base/models/result.object.type';
-import { Session } from '../../../security/domain/session.mongoose.entity';
-import { SessionRepository } from '../../../security/infrastructure/session.repository';
+import { UserRepository } from '../../../users/infrastructure/user.typeOrm.repository';
+import { SessionRepository } from '../../../security/infrastructure/session.typeOrm.repository';
+import { Session_Orm } from '../../../security/domain/session.typeOrm.entity';
+import { add } from 'date-fns';
+import { jwtConstants } from '../../../../infrastructure/constants/constants';
+import { SessionCreateModel } from '../../../security/api/models/input/create.session.model';
+
 
 export class UserLoginCommand {
    constructor(public userId: string,
@@ -17,24 +21,34 @@ export class UserLoginCommand {
 @CommandHandler(UserLoginCommand)
 export class UserLoginUseCase implements ICommandHandler<UserLoginCommand> {
    constructor(
-      protected userRepository: UserRepository,
       @Inject(SessionRepository.name) private readonly sessionRepository: SessionRepository,
-      @Inject(AuthService.name) protected authService: AuthService
+      @Inject(AuthService.name) protected authService: AuthService,
+      @Inject(UserRepository.name) private readonly userRepository: UserRepository
    ) { }
 
    async execute(command: UserLoginCommand): Promise<ResultObjectModel<{ accessToken: string, refreshToken: string }> | false> {
       try {
-         const user = await this.userRepository.getUserById(command.userId);
+         const user = await this.userRepository.getById(command.userId);
          if (!user) return {
             data: null,
             errorMessage: 'User not found',
             status: ResultStatus.NOT_FOUND
          }
-         const session = Session.createSession(command.userId,command.ip, command.deviceName);
-         const newSession = await this.sessionRepository.createSession(session)
+         const sessionDuration = parseInt(jwtConstants.refreshExpiresIn.slice(0, -1));
+
+         const sessionModel: SessionCreateModel = {
+            userId: user.id,
+            ip: command.ip ?? 'Unknown',
+            deviceName: command.deviceName ?? 'Unknown',
+            expirationDate: add(new Date(), {
+               days: sessionDuration
+            })
+         }
+         const session = Session_Orm.createSession(sessionModel);
+         const newSession = await this.sessionRepository.save(session)
+         const dateString = newSession.updatedAt.toISOString()
+         const tokens = await this.authService.generateTokens(command.userId, newSession.id, dateString);
          
-         const deviceIdString = newSession._id.toString()
-         const tokens = await this.authService.generateTokens(command.userId, deviceIdString, session.issuedAt);
          return {
             data: tokens,
             status: ResultStatus.SUCCESS

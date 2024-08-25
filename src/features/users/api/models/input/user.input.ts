@@ -1,5 +1,4 @@
 import { IsEmail, Length, Matches } from "class-validator";
-
 import { NameIsExist } from "../../../../../infrastructure/decorators/validate/user-is-exist.decorator";
 import { Trim } from "../../../../../infrastructure/decorators/transform/trim.decorator";
 import { QueryPaginationModel, QuerySortModel } from "../../../../../base/models/input/input.models";
@@ -22,17 +21,17 @@ export class UserInputModel {
 
 
 export interface UserCreateModel extends UserInputModel {
-	passwordHash: string;
+  passwordHash: string;
 }
 
 export interface UserQueryData extends QueryPaginationModel {
-	searchLoginTerm?: string;
-	searchEmailTerm?: string;
+  searchLoginTerm?: string;
+  searchEmailTerm?: string;
 }
 
 export interface UserSortData extends QuerySortModel {
-   searchLoginTerm: string | null;
-   searchEmailTerm: string | null;
+  searchLoginTerm: string | null;
+  searchEmailTerm: string | null;
 }
 
 

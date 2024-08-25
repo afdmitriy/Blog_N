@@ -21,7 +21,7 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt-cookie') 
   }
 
   async validate(payload: any) {
-   // Наверное стоит проверять айди сессии и дату выпуска этой сессии, если у токена дата сессии раньше чем в бд, то не пропускаю
+    // Наверное стоит проверять айди сессии и дату выпуска этой сессии, если у токена дата сессии раньше чем в бд, то не пропускаю
     const sessionId = await this.authService.sessionIsValid(payload.userId, payload.deviceId, payload.issuedAt);
     if (!sessionId) throw new HttpException('Unautorized', HttpStatus.UNAUTHORIZED)
     return { userId: payload.userId, deviceId: payload.deviceId };
