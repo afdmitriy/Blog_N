@@ -6,7 +6,7 @@ import { QueryPaginationResult, QueryPaginationType } from '../types/query-sort.
 
 //Пайп для применения параметров по умолчанию для отсутствующих полей
 //Так же есть проверка в классе QueryPaginationType с помощью class-validator
-//не забудь подключить пайп в провайдерах
+
 @Injectable()
 export class QueryPaginationPipe implements PipeTransform<QueryPaginationType, Promise<QueryPaginationResult>> {
   async transform(value: QueryPaginationType, metadata: ArgumentMetadata): Promise<QueryPaginationResult> {

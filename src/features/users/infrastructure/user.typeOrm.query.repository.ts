@@ -17,7 +17,6 @@ export class UserQueryRepository {
    }
 
    async getAll(sortData: QueryPaginationResult): Promise<PaginationWithItems<UserOutputModel>> {
-      console.log('SortData ', sortData)
       const skip = (sortData.pageNumber - 1) * sortData.pageSize;
       const serachLoginTerm = sortData.searchLoginTerm ?? '';
       const searchEmailTerm = sortData.searchEmailTerm ?? '';

@@ -48,34 +48,6 @@ export class AuthService {
       }
    }
 
-   // async userRegistrationConfirmation(confirmationCode: string): Promise<boolean | null> {
-   //    // приходит код, проверяю, что он есть в базе, не протух и isConfirmed это false, вношу подтверждение в isConfirmed
-   //    try {
-   //       const user =
-   //          await this.userRepository.getUserByConfirmCode(
-   //             confirmationCode
-   //          );
-   //       if (!user) {
-   //          return null;
-   //       }
-   // //       const date = Date.parse(user.emailConfirmation.expirationDate)
-   // //       if (new Date(date) < new Date()) {
-   // //          return false;
-   // //       }
-   // //       if (user.emailConfirmation.isConfirmed != false) {
-   // //          return false;
-   // //       }
-   //       user.confirmEmail()
-   //       await this.userRepository.saveUser(user);
-   //       return true;
-   //    } catch (error) {
-   //       console.log(error);
-   //       return false;
-   //    }
-   // }
-
-
-
    async validateUser(loginOrEmail: string, password: string): Promise<ResultObjectModel<{ userId: string }>> {
       const user = await this.userRepository.getByLoginOrEmail(loginOrEmail);
       if (!user) return {
@@ -83,12 +55,6 @@ export class AuthService {
          errorMessage: 'Login or email not found',
          status: ResultStatus.UNAUTHORIZED
       };
-
-      // if (user.isConfirmed === false) return {
-      //    data: null,
-      //    errorMessage: 'Email not confirmed',
-      //    status: ResultStatus.UNAUTHORIZED
-      // }
 
       const isPasswordEquals = await bcrypt.compare(password, user.passwordHash);
       if (!isPasswordEquals) return {

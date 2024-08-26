@@ -5,8 +5,6 @@ import { ResultStatus } from '../../../../base/models/enums/enums';
 import { ResultObjectModel } from '../../../../base/models/result.object.type';
 import { SessionRepository } from '../../../security/infrastructure/session.typeOrm.repository';
 
-
-
 export class RefreshTokensCommand {
    constructor(public deviceId: string
    ) { }

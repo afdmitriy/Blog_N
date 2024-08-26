@@ -4,8 +4,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from '../constants/constants';
 import { AuthService } from '../../features/auth/application/auth.service';
 
-
-
 @Injectable()
 export class JwtCookieStrategy extends PassportStrategy(Strategy, 'jwt-cookie') {
   constructor(@Inject(AuthService.name) private authService: AuthService) {

@@ -26,7 +26,6 @@ export class UserController {
       const result = await this.commandBus.execute(new UserCreateCommand(inputUser))
       if(result.status === ResultStatus.BAD_REQUEST) throw new HttpException('Login or Email already exist', HttpStatus.BAD_REQUEST)
       if (result.status === ResultStatus.SUCCESS) {
-         console.log('Result Data = ', result.data)
          return await this.userQueryRepository.getById(result.data)
       }
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR)

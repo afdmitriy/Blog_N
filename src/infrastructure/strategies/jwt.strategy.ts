@@ -4,9 +4,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from '../constants/constants';
 import { UserRepository } from '../../features/users/infrastructure/user.typeOrm.repository';
 
-
-
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(@Inject(UserRepository.name) private readonly userRepository: UserRepository) {
