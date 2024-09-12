@@ -54,7 +54,7 @@ export class BlogQueryRepository {
          name: blog.name,
          description: blog.description,
          websiteUrl: blog.websiteUrl,
-         createdAt: blog.updatedAt.toISOString(),
+         createdAt: blog.createdAt.toISOString(),
          isMembership: blog.isMembership
       }
    }

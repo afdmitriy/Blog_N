@@ -12,10 +12,10 @@ export class LikeForPost_Orm extends BaseTypeORMEntity {
    @Column({ type: 'enum', enum: LikeStatusEnum })
    likeStatus: LikeStatusEnum;
 
-   @Column()
+   @Column({ type: 'uuid' })
    userId: string
 
-   @Column()
+   @Column({ type: 'uuid' })
    postId: string
 
    @ManyToOne(() => Post_Orm, (p) => p.likes, { onDelete: "CASCADE" })

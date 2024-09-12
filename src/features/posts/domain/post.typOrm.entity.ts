@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BaseTypeORMEntity } from "../../../base/entities/base.entity";
 import { Blog_Orm } from "../../blogs/domain/entities/blog.typeOrm.entity";
-import { PostWithoutBlogInputModel } from "../api/models/input/post.input";
+import { PostInputModel, PostWithoutBlogInputModel } from "../api/models/input/post.input";
 import { LikeForPost_Orm } from "./like-for-post.typeOrm.entity";
 
 
@@ -17,7 +17,7 @@ export class Post_Orm extends BaseTypeORMEntity {
    @Column()
    content: string
 
-   @Column()
+   @Column({ type: 'uuid' })
    blogId: string
 
    @ManyToOne(() => Blog_Orm, (b) => b.posts, { onDelete: "CASCADE" })
@@ -27,15 +27,12 @@ export class Post_Orm extends BaseTypeORMEntity {
    @OneToMany(() => LikeForPost_Orm, (l) => l.post)
    likes: LikeForPost_Orm[];
 
-   @OneToMany(() => LikeForPost_Orm, (pl) => pl.userId)
-   postLikes: LikeForPost_Orm[];
-
-   static createPostModel(newPost: PostWithoutBlogInputModel): Post_Orm {
+   static createPostModel(newPost: PostInputModel): Post_Orm {
       const post = new this();
       post.title = newPost.title;
       post.shortDescription = newPost.shortDescription;
       post.content = newPost.content;
-
+      post.blogId = newPost.blogId
       return post;
    }
 

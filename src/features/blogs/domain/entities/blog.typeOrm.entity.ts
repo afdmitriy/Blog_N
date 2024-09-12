@@ -31,11 +31,11 @@ export class Blog_Orm extends BaseTypeORMEntity {
       return blog;
    }
 
-   updateBlog(params: BlogInputModel): Blog_Orm {
+   updateBlog(params: BlogInputModel): void {
 		this.name = params.name;
 		this.description = params.description;
 		this.websiteUrl = params.websiteUrl;
-      return this
+      
 	}
 
 }

@@ -30,7 +30,6 @@ export class PostCreateUseCase implements ICommandHandler<PostCreateCommand> {
          }
          const newPostData = {
             ...command.postData,
-            blogName: blog.name
          }
          const newPost: Post_Orm = Post_Orm.createPostModel(newPostData)
 

@@ -1,58 +1,58 @@
-import { Injectable } from "@nestjs/common";
-import { BlogRepository } from "../infrastructure/blog.mongoose.repository";
-import { Blog } from "../domain/entities/blog.mongoose.entity";
-import { BlogOutputModel } from "../api/models/output/blog.output.models";
-import { BlogInputModel } from "../api/models/input/blog.input";
-import { ResultObjectModel } from "src/base/models/result.object.type";
-import { ResultStatus } from "../../../base/models/enums/enums";
+// import { Injectable } from "@nestjs/common";
+// import { BlogRepository } from "../infrastructure/blog.mongoose.repository";
+// import { Blog } from "../domain/entities/blog.mongoose.entity";
+// import { BlogOutputModel } from "../api/models/output/blog.output.models";
+// import { BlogInputModel } from "../api/models/input/blog.input";
+// import { ResultObjectModel } from "src/base/models/result.object.type";
+// import { ResultStatus } from "../../../base/models/enums/enums";
 
 
-@Injectable()
-export class BlogService {
-   constructor(protected blogRepository: BlogRepository
-   ) { }
+// @Injectable()
+// export class BlogService {
+//    constructor(protected blogRepository: BlogRepository
+//    ) { }
 
-   async createBlog(blogData: BlogInputModel): Promise<ResultObjectModel<BlogOutputModel>> {
-      const newBlog = new Blog(blogData);
+//    async createBlog(blogData: BlogInputModel): Promise<ResultObjectModel<BlogOutputModel>> {
+//       const newBlog = new Blog(blogData);
      
-      const res = await this.blogRepository.addBlog(newBlog);
-      if (!res) return {
-         data: null,
-         errorMessage: 'Error while create blog in DB',
-         status: ResultStatus.SERVER_ERROR
-      }
-      return {
-         data: Blog.toDto(res),
-         status: ResultStatus.SUCCESS
-      }
-   }
+//       const res = await this.blogRepository.addBlog(newBlog);
+//       if (!res) return {
+//          data: null,
+//          errorMessage: 'Error while create blog in DB',
+//          status: ResultStatus.SERVER_ERROR
+//       }
+//       return {
+//          data: Blog.toDto(res),
+//          status: ResultStatus.SUCCESS
+//       }
+//    }
 
-   async updateBlog(blogId: string, newData: BlogInputModel): Promise<boolean | null> {
+//    async updateBlog(blogId: string, newData: BlogInputModel): Promise<boolean | null> {
 
-      const targetBlog = await this.blogRepository.getBlogById(blogId);
+//       const targetBlog = await this.blogRepository.getBlogById(blogId);
 
-      if (!targetBlog) return null;
+//       if (!targetBlog) return null;
 
-      targetBlog.updateBlog(newData);
-      // targetBlog.save()   или
-      await this.blogRepository.saveBlog(targetBlog);
+//       targetBlog.updateBlog(newData);
+//       // targetBlog.save()   или
+//       await this.blogRepository.saveBlog(targetBlog);
       
-      return true;
-   }
+//       return true;
+//    }
 
-   async deleteBlog(blogId: string): Promise<ResultObjectModel<BlogOutputModel> | null> {
-      const blog = await this.blogRepository.getBlogById(blogId)
-      if(!blog) return null
+//    async deleteBlog(blogId: string): Promise<ResultObjectModel<BlogOutputModel> | null> {
+//       const blog = await this.blogRepository.getBlogById(blogId)
+//       if(!blog) return null
       
-      const result = this.blogRepository.deleteBlog(blogId);
-      if (!result) return {
-			data: null,
-			errorMessage: 'Error while delete blog in DB',
-			status: ResultStatus.SERVER_ERROR,
-		}
-		return {
-			data: null,
-			status: ResultStatus.SUCCESS
-		}
-   }
-}
+//       const result = this.blogRepository.deleteBlog(blogId);
+//       if (!result) return {
+// 			data: null,
+// 			errorMessage: 'Error while delete blog in DB',
+// 			status: ResultStatus.SERVER_ERROR,
+// 		}
+// 		return {
+// 			data: null,
+// 			status: ResultStatus.SUCCESS
+// 		}
+//    }
+// }

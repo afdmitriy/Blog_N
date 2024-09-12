@@ -1,34 +1,34 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ResultObjectModel } from "../../../../base/models/result.object.type";
 import { ResultStatus } from "../../../../base/models/enums/enums";
-import { BlogRepository } from "../../infrastructure/blog.repository";
 import { Inject } from "@nestjs/common";
+import { PostRepository } from "../../infrastructure/post.repository";
 
-export class BlogDeleteCommand {
+export class PostDeleteCommand {
    constructor(
-      public blogId: string
+      public postId: string
    ) { }
 }
 
-@CommandHandler(BlogDeleteCommand)
-export class BlogDeleteUseCase implements ICommandHandler<BlogDeleteCommand> {
+@CommandHandler(PostDeleteCommand)
+export class PostDeleteUseCase implements ICommandHandler<PostDeleteCommand> {
    constructor(
-      @Inject(BlogRepository.name) private readonly blogRepository: BlogRepository,
+      @Inject(PostRepository.name) private readonly postRepository: PostRepository,
 
    ) { }
-   async execute(command: BlogDeleteCommand): Promise<ResultObjectModel<null>> {
+   async execute(command: PostDeleteCommand): Promise<ResultObjectModel<null>> {
       try {
-         const blog = await this.blogRepository.getById(command.blogId)
-      if(!blog) return {
+         const post = await this.postRepository.getById(command.postId)
+      if(!post) return {
          data: null,
-         errorMessage: 'Blog not found',
+         errorMessage: 'Post not found',
          status: ResultStatus.NOT_FOUND
       }
       
-      const result = this.blogRepository.deleteById(command.blogId);
+      const result = this.postRepository.deleteById(command.postId);
       if (!result) return {
 			data: null,
-			errorMessage: 'Error while delete blog in DB',
+			errorMessage: 'Error while delete post in DB',
 			status: ResultStatus.SERVER_ERROR,
 		}
 		return {

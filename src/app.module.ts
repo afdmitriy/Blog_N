@@ -5,7 +5,6 @@ import { PostsModule } from './features/posts/posts.module';
 import { TestingModule } from './features/testing/testing.module';
 import { AuthModule } from './features/auth/auth.module';
 // import { CommentsModule } from './features/comments/comment.module';
-import { LikesModule } from './infrastructure/modules/like/like.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/users.module';
 import { appSettings } from './settings/app.settings';
@@ -64,7 +63,7 @@ const decorators = [NameIsExistConstraint,
     BlogsModule,
     PostsModule,
     // CommentsModule,
-    LikesModule,
+    // LikesModule,
     TestingModule,
   ],
 

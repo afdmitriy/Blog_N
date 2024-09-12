@@ -29,9 +29,9 @@ export class BlogUpdateUseCase implements ICommandHandler<BlogUpdateCommand> {
             status: ResultStatus.NOT_FOUND
          }
 
-         const blog = targetBlog.updateBlog(command.blogData);
+         targetBlog.updateBlog(command.blogData);
 
-         await this.blogRepository.save(blog);
+         await this.blogRepository.save(targetBlog);
 
          return {
             data: null,
