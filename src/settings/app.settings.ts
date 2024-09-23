@@ -63,7 +63,7 @@ class APISettings {
     this.POSTGRES_URI =
       envVariables.POSTGRES_URI ?? "postgres://postgres/777666@localhost:5432/blog-nest-db"
     this.POSTGRES_URI_FOR_TESTS =
-      envVariables.POSTGRES_URI_FOR_TESTS ?? 'postgres://postgres/777666@localhost:5432/blog-nest-test'; 
+      envVariables.POSTGRES_URI_FOR_TESTS ?? 'postgres://postgres/777666@localhost:5432/blog-nest-db-test'; 
   
   }
 

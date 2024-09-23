@@ -3,9 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { render } from 'prettyjson';
 import request from 'supertest';
-
 import { AppModule } from '../../src/app.module';
-
 import { AuthTestManager } from '../common/authTestManager';
 import { BlogTestManager } from '../common/blogTestManager';
 import { CommentTestManager } from '../common/commentTestManager';
@@ -17,12 +15,12 @@ import { applyAppSettings } from '../../src/settings/apply.app.settings';
 const userCreateData = {
   login: 'logTest',
   password: 'qwerty',
-  email: 'linesreen@mail.ru',
+  email: 'animail@mail.ru',
 };
 const user2CreateData = {
   login: '2logTest',
   password: '2qwerty',
-  email: '2linesreen@mail.ru',
+  email: 'anymail@mail.ru',
 };
 let token: string;
 let token2: string;
@@ -42,7 +40,7 @@ describe('Users e2e test', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }) //Мокаем ддос защиту для того что бы она не мешала
+    }) //Мок ддос защиты, чтобы не мешала
       .overrideGuard(ThrottlerGuard)
       .useValue({
         canActivate: () => {

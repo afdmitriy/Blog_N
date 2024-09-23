@@ -4,6 +4,8 @@ import { UserCreateModel } from "../api/models/input/user.input";
 import { Session_Orm } from "../../security/domain/session.typeOrm.entity";
 import { PasswordResetData } from "../../auth/domain/recovery.password.data.entity";
 import { LikeForPost_Orm } from "../../posts/domain/like-for-post.typeOrm.entity";
+import { Comment_Orm } from "../../comments/domain/comment.typeOrm.entity";
+import { LikeForComment_Orm } from "../../comments/domain/like-for-comment.typeOrm.entity";
 // import { Session_Orm } from "../../security/domain/session.typeOrm.entity";
 
 @Entity()
@@ -35,11 +37,11 @@ export class User_Orm extends BaseTypeORMEntity {
    @OneToMany(() => LikeForPost_Orm, (pl) => pl.user)
    postLikes: LikeForPost_Orm[];
 
-   // @OneToMany(() => Comment_Orm, (c) => c.userId)
-   // comments: Comment_Orm[];
+   @OneToMany(() => Comment_Orm, (c) => c.userId)
+   comments: Comment_Orm[];
 
-   // @OneToMany(() => Comment_like_Orm, (cl) => cl.userId)
-   // commentLikes: Comment_like_Orm[];
+   @OneToMany(() => LikeForComment_Orm, (cl) => cl.userId)
+   commentLikes: LikeForComment_Orm[];
 
 
    static createUserModel(userData: UserCreateModel): User_Orm {

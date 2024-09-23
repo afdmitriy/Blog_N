@@ -11,7 +11,7 @@ export class PostRepository {
       const post = await this.postRepository.findOne({ where: { id } });
       return post || null;
    }
-
+   
    async deleteById(id: string): Promise<void> {
       await this.postRepository.softDelete(id)
    }

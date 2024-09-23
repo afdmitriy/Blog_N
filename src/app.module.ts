@@ -4,7 +4,7 @@ import { BlogsModule } from './features/blogs/blogs.module';
 import { PostsModule } from './features/posts/posts.module';
 import { TestingModule } from './features/testing/testing.module';
 import { AuthModule } from './features/auth/auth.module';
-// import { CommentsModule } from './features/comments/comment.module';
+import { CommentsModule } from './features/comments/comment.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/users.module';
 import { appSettings } from './settings/app.settings';
@@ -44,7 +44,9 @@ const decorators = [NameIsExistConstraint,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: appSettings.env.isTesting()
-        ? appSettings.api.POSTGRES_URI_FOR_TESTS
+        ?( function (){
+          console.log( appSettings.api.POSTGRES_URI_FOR_TESTS)
+          return appSettings.api.POSTGRES_URI_FOR_TESTS})()
         : appSettings.api.POSTGRES_URI,
       // host: 'localhost',
       // port: 5432,
@@ -62,7 +64,7 @@ const decorators = [NameIsExistConstraint,
     SessionsModule,
     BlogsModule,
     PostsModule,
-    // CommentsModule,
+    CommentsModule,
     // LikesModule,
     TestingModule,
   ],
@@ -84,7 +86,7 @@ export class AppModule  implements NestModule {
         { path: 'posts', method: RequestMethod.GET },
         { path: 'posts/:postId', method: RequestMethod.GET },
         { path: 'posts/:postId/comments', method: RequestMethod.GET },
-        // { path: 'comments/:commentId', method: RequestMethod.GET },
+        { path: 'comments/:commentId', method: RequestMethod.GET },
       );
   }
 }

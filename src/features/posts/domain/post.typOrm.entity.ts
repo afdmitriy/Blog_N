@@ -3,6 +3,7 @@ import { BaseTypeORMEntity } from "../../../base/entities/base.entity";
 import { Blog_Orm } from "../../blogs/domain/entities/blog.typeOrm.entity";
 import { PostInputModel, PostWithoutBlogInputModel } from "../api/models/input/post.input";
 import { LikeForPost_Orm } from "./like-for-post.typeOrm.entity";
+import { Comment_Orm } from "../../comments/domain/comment.typeOrm.entity";
 
 
 @Entity()
@@ -26,6 +27,9 @@ export class Post_Orm extends BaseTypeORMEntity {
 
    @OneToMany(() => LikeForPost_Orm, (l) => l.post)
    likes: LikeForPost_Orm[];
+
+   @OneToMany(() => Comment_Orm, (c) => c.post)
+   comments: Comment_Orm[];
 
    static createPostModel(newPost: PostInputModel): Post_Orm {
       const post = new this();

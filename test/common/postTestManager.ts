@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { PostCreateModel, PostInputModel } from '../../src/features/posts/api/models/input/post.input';
+import { PostInputModel } from '../../src/features/posts/api/models/input/post.input';
 import { BlogInputModel } from '../../src/features/blogs/api/models/input/blog.input';
 
 export class PostTestManager {
@@ -52,7 +52,7 @@ export class PostTestManager {
       .expect(status);
   }
   async createPostToBlog(
-    postData: PostCreateModel | null,
+    postData: PostInputModel | null,
     blogId: string,
     status: number = 201,
     adminData?: { login: string; password: string },
