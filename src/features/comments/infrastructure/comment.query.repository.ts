@@ -67,9 +67,7 @@ export class CommentQueryRepository {
         const totalCount = await commentsQuery.getCount();
         const comments = await commentsQuery
             .getRawMany(); // Получаем все комментарии
-        console.log('RAW COMMENTs', comments)
         const result = comments.map(comment => this.mapCommentToResponse(comment));
-        console.log('RESULT', result)
         // Формируем объект пагинации
         const paginationResult = new PaginationWithItems<CommentWithLikesOutputModel>(
             sortData ? sortData.pageNumber : 1, // Текущая страница
@@ -84,7 +82,6 @@ export class CommentQueryRepository {
 
 
     private mapCommentToResponse(rawComment: RawCommentType): CommentWithLikesOutputModel {
-        console.log('Comment MAPPER', rawComment)
         return {
             id: rawComment.comment_id,
             content: rawComment.comment_content,

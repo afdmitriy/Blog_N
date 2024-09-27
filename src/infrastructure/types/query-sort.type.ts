@@ -42,3 +42,38 @@ export class QueryPaginationResult {
   pageNumber: number
   pageSize: number
 }
+
+// Новый подход, в рамках обучения не переписываю старый код
+export class QueryBaseClass {
+
+  @IsOptional()
+  @IsString()
+  sortBy: string = 'createdAt';
+
+  @Transform(({ value }) => {
+    if (value.toLowerCase() === 'asc') {
+      return 'ASC';
+    } else {
+      return 'DESC';
+    }
+  })
+  sortDirection: 'ASC' | 'DESC' = 'DESC';
+
+  @Transform(({ value }) => {
+    if (Number(value)) {
+      return Number(value);
+    } else {
+      return 1;
+    }
+  })
+  pageNumber = 1;
+
+  @Transform(({ value }) => {
+    if (Number(value)) {
+      return Number(value);
+    } else {
+      return 10;
+    }
+  })
+  pageSize = 10;
+}

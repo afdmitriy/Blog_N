@@ -23,8 +23,6 @@ export class CommentController {
    @Get(':commentId')
    @HttpCode(200)
    async getCommentById(@Param('commentId') commentId: string, @CurrentUserId() userId: string): Promise<CommentWithLikesOutputModel | null> {
-      console.log('COMMENT USERID', userId)
-      // не приходит userId
       const res = await this.commentQueryRepository.getComments(userId, undefined, undefined, commentId)
       if (!res) throw new HttpException(`Post not found`, HttpStatus.NOT_FOUND)
       return res as CommentWithLikesOutputModel
@@ -57,7 +55,6 @@ export class CommentController {
    @UseGuards(JwtAuthGuard)
    @HttpCode(204)
    async deleteComment(@Param('commentId') commentId: string, @CurrentUserId() userId: string): Promise<void> {
-
       const checkOwner = await this.commentService.checkOwnerId(commentId, userId)
       if(checkOwner.status === ResultStatus.FORBIDDEN) throw new HttpException(`403`, HttpStatus.FORBIDDEN)
       const res = await this.commandBus.execute(new CommentDeleteCommand(commentId))

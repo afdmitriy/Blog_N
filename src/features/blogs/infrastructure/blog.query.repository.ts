@@ -10,7 +10,7 @@ import { BlogOutputModel } from "../api/models/output/blog.output.models";
 export class BlogQueryRepository {
    constructor(@InjectRepository(Blog_Orm) protected blogRepository: Repository<Blog_Orm>) { }
 
-   async getById(id: string): Promise<BlogOutputModel| null> {
+   async getById(id: string): Promise<BlogOutputModel | null> {
       const blog = await this.blogRepository.findOne({ where: { id } });
       if (!blog) return null
       return this.blogMapper(blog);
