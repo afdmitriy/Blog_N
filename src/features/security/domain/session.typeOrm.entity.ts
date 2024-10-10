@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm";
 import { BaseTypeORMEntity } from "../../../base/entities/base.entity";
 import { User_Orm } from "../../users/domain/user.typeOrm.entity";
 import { jwtConstants } from "../../../infrastructure/constants/constants";
@@ -14,12 +14,15 @@ export class Session_Orm extends BaseTypeORMEntity {
    deviceName: string;
 
    @Column()
-	ip: string;
+   ip: string;
 
-   @Column({type: 'timestamp with time zone' })
+   @Column({ type: 'timestamp with time zone' })
    expirationDate: Date
 
-   @ManyToOne(() => User_Orm, (u) => u.sessions, {onDelete: "CASCADE"})
+   @UpdateDateColumn({ type: 'timestamp with time zone' })
+   public updatedAt: Date;
+
+   @ManyToOne(() => User_Orm, (u) => u.sessions, { onDelete: "CASCADE" })
    @JoinColumn({ name: 'userId' })
    user: User_Orm;
 
@@ -29,13 +32,14 @@ export class Session_Orm extends BaseTypeORMEntity {
       session.deviceName = sessonModel.deviceName ?? 'Unknown'
       session.ip = sessonModel.ip || 'Unknown'
       session.expirationDate = sessonModel.expirationDate
-		return session
-	}
+      session.updatedAt = new Date()
+      return session
+   }
 
    extendSession() {
-		const duration = parseInt(jwtConstants.refreshExpiresIn.slice(0, -1));
-		this.expirationDate = add(new Date(), {
-			days: duration
-		})
-	}
+      const duration = parseInt(jwtConstants.refreshExpiresIn.slice(0, -1));
+      this.expirationDate = add(new Date(), {
+         days: duration
+      })
+   }
 }

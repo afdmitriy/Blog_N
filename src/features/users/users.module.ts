@@ -11,7 +11,6 @@ import { UserDeleteUseCase } from "./application/user.delete.use-case";
 
 @Module({
    imports: [CqrsModule,
-      // MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
       TypeOrmModule.forFeature([User_Orm])],
    controllers: [UserController],
    providers: [

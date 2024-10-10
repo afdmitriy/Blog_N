@@ -23,7 +23,6 @@ export class UserController {
 
    @Post('')
    async createUser(@Body() inputUser: UserInputModel): Promise<UserOutputModel | null> {
-      console.log("USERS------")
       const result = await this.commandBus.execute(new UserCreateCommand(inputUser))
       if(result.status === ResultStatus.BAD_REQUEST) throw new HttpException('Login or Email already exist', HttpStatus.BAD_REQUEST)
       if (result.status === ResultStatus.SUCCESS) {

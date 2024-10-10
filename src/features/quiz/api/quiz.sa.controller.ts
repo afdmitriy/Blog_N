@@ -30,7 +30,7 @@ export class SaQuizController {
    async createQuestion(@Body() question: QuestionInputModel): Promise<QuestionOutputModel | null> {
       const res = await this.commandBus.execute(new QuestionCreateCommand(question))
       if(res.status !== ResultStatus.SUCCESS) throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR)
-      return await this.questionQueryRepository.getQuestionById(res.data.id)
+      return await this.questionQueryRepository.getQuestionById(res.data)
    }
 
    @Delete(':questionId')

@@ -12,6 +12,8 @@ export class QuestionPublishUpdateCommand {
 
 @CommandHandler(QuestionPublishUpdateCommand)
 export class QuestionPublishUpdateUseCase implements ICommandHandler<QuestionPublishUpdateCommand> {
+
+
    constructor(
       @Inject(QuestionRepository.name) private readonly questionRepository: QuestionRepository,
    ) { }

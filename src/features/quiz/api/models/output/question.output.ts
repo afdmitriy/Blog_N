@@ -4,5 +4,5 @@ export interface QuestionOutputModel {
   correctAnswers: string[] | [],
   published: boolean,
   createdAt: string,
-  updatedAt: string
+  updatedAt: string | null
 }

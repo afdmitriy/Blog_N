@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsArray, IsBoolean, IsOptional, Length } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, Length } from "class-validator";
 import { Trim } from "../../../../../infrastructure/decorators/transform/trim.decorator";
 import { Transform } from "class-transformer";
 import { QueryBaseClass } from "../../../../../infrastructure/types/query-sort.type";
@@ -8,11 +8,11 @@ export class QuestionInputModel {
    @Trim()
    @Length(10, 500)
    body: string;
+   
    @IsArray()
-   @ArrayNotEmpty()
-   @Transform(({ value }) => {
-      return value.map((a) => a.toString().trim());
-   })
+   @ArrayMinSize(1)
+   @ArrayMaxSize(6)
+   @IsString({ each: true })
    correctAnswers: string[]
 }
 

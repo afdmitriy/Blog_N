@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { QuestionOutputModel } from "../../api/models/output/question.output";
 import { Repository } from "typeorm";
-import { Question } from "../../domain/entities/question.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationWithItems } from "../../../../base/models/pagination";
 import { QuestionQueryClass } from "../../api/models/input/question.input";
 import { PublishedStatus } from "../../api/models/enums/enums";
+import { Question_Orm } from "../../domain/entities/question.entity";
 
 @Injectable()
 export class QuestionQueryRepository {
-   constructor(@InjectRepository(Question) protected questionRepository: Repository<Question>) { }
+   constructor(@InjectRepository(Question_Orm) protected questionRepository: Repository<Question_Orm>) { }
 
    async getQuestionById(id: string): Promise<QuestionOutputModel | null> {
       const question = await this.questionRepository.findOne({ where: { id } });
@@ -54,14 +54,14 @@ export class QuestionQueryRepository {
       return questionsOutput;
    }
 
-   private mapQuestionToResponse(question: Question): QuestionOutputModel {
+   private mapQuestionToResponse(question: Question_Orm): QuestionOutputModel {
       return {
          id: question.id,
          body: question.body,
          correctAnswers: question.correctAnswers,
          published: question.published,
          createdAt: question.createdAt.toISOString(),
-         updatedAt: question.updatedAt.toISOString(),
+         updatedAt: question.updatedAt ? question.updatedAt.toISOString() : null,
       };
    }
 }

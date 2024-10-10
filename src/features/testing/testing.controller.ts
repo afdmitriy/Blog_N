@@ -9,6 +9,7 @@ import { Post_Orm } from "../posts/domain/post.typOrm.entity";
 import { Comment_Orm } from "../comments/domain/comment.typeOrm.entity";
 import { LikeForComment_Orm } from "../comments/domain/like-for-comment.typeOrm.entity";
 import { LikeForPost_Orm } from "../posts/domain/like-for-post.typeOrm.entity";
+import { Question_Orm } from "../quiz/domain/entities/question.entity";
 
 
 @Controller('testing')
@@ -22,6 +23,7 @@ export class TestingController {
       @InjectRepository(LikeForPost_Orm) protected likeForPostRepository: Repository<LikeForPost_Orm>,
       @InjectRepository(Comment_Orm) protected commentRepository: Repository<Comment_Orm>,
       @InjectRepository(LikeForComment_Orm) protected likeForCommentRepository: Repository<LikeForComment_Orm>,
+      @InjectRepository(Question_Orm) protected questionRepository: Repository<Question_Orm>,
       // @InjectModel(BLOG_MODEL_NAME) private blogModel: Model<BlogDocument>,
       // @InjectModel(POST_MODEL_NAME) private postModel: Model<PostDocument>,
       // @InjectModel(USER_MODEL_NAME) private userModel: Model<UserDocument>,
@@ -42,6 +44,7 @@ export class TestingController {
       await this.commentRepository.delete({});
       await this.likeForCommentRepository.delete({});
       await this.likeForPostRepository.delete({});
+      await this.questionRepository.delete({})
 
 
       // await this.blogModel.deleteMany({})

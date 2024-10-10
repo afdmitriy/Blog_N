@@ -1,30 +1,41 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { BaseTypeORMEntity } from "../../../../base/entities/base.entity";
 import { GameStatusEnum } from "../../api/models/enums/enums";
-import { Player } from "./player.entity";
-import { GameQuestion } from "./game-question.entity";
+import { Player_Orm } from "./player.entity";
+import { GameQuestion_Orm } from "./game-question.entity";
 
 @Entity()
-export class Game extends BaseTypeORMEntity {
+export class Game_Orm extends BaseTypeORMEntity {
 
-   @Column({ type: 'enum', enum: GameStatusEnum })
+   @Column({ type: 'enum', enum: GameStatusEnum, default: GameStatusEnum.PendingSecondPlayer })
    gameStatus: GameStatusEnum;
 
    @Column({ type: 'uuid' })
    firstPlayerId: string
 
-   @Column({ type: 'uuid' })
+   @Column({ type: 'uuid', default: null })
    secondPlayerId: string | null
 
-   @OneToOne(() => Player)
+   @OneToOne(() => Player_Orm)
    @JoinColumn({ name: 'firstPlayerId' })
-   public firstPlayer: Player;
+   public firstPlayer: Player_Orm;
 
-   @OneToOne(() => Player)
+   @OneToOne(() => Player_Orm)
    @JoinColumn({ name: 'secondPlayerId' })
-   public secondPlayer: Player;
+   public secondPlayer: Player_Orm;
 
-   @OneToMany(() => GameQuestion, (gq) => gq.gameId)
-   gameQuestions: GameQuestion[];
+   @OneToMany(() => GameQuestion_Orm, (gq) => gq.gameId)
+   gameQuestions: GameQuestion_Orm[];
+
+   static createGame(firstPlayerId: string): Game_Orm {
+      const game = new this();
+      game.firstPlayerId = firstPlayerId
+      game.gameStatus = GameStatusEnum.PendingSecondPlayer
+      return game;
+   }
+
+   addSecondPlayer(secondPlayerId: string): void {
+      this.secondPlayerId = secondPlayerId
+   }
 
 }

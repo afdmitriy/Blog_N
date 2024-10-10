@@ -6,7 +6,7 @@ import { PasswordResetData } from "../../auth/domain/recovery.password.data.enti
 import { LikeForPost_Orm } from "../../posts/domain/like-for-post.typeOrm.entity";
 import { Comment_Orm } from "../../comments/domain/comment.typeOrm.entity";
 import { LikeForComment_Orm } from "../../comments/domain/like-for-comment.typeOrm.entity";
-import { Player } from "../../quiz/domain/entities/player.entity";
+import { Player_Orm } from "../../quiz/domain/entities/player.entity";
 // import { Session_Orm } from "../../security/domain/session.typeOrm.entity";
 
 @Entity()
@@ -44,8 +44,8 @@ export class User_Orm extends BaseTypeORMEntity {
    @OneToMany(() => LikeForComment_Orm, (cl) => cl.userId)
    commentLikes: LikeForComment_Orm[];
 
-   @OneToMany(() => Player, (player) => player.userId)
-   players: Player[];
+   @OneToMany(() => Player_Orm, (player) => player.userId)
+   players: Player_Orm[];
 
    static createUserModel(userData: UserCreateModel): User_Orm {
       const user = new User_Orm();

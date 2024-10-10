@@ -18,9 +18,9 @@ export const applyAppSettings = (app: INestApplication) => {
    app.enableCors();
    //Для валидации входных параметров
 
-   app.use(cookieParser());
+   // app.use(cookieParser());
 
-   app.enableCors();
+   // app.enableCors();
    // Применение глобальных Interceptors
    // app.useGlobalInterceptors()
 
@@ -45,10 +45,12 @@ const setAppPipes = (app: INestApplication) => {
       new ValidationPipe({
          // Для работы трансформации входящих данных
          transform: true,
+
+         enableDebugMessages: true,
          // Выдавать первую ошибку для каждого поля
          stopAtFirstError: true,
 
-         //  forbidUnknownValues: false,
+         forbidUnknownValues: false,
          // Перехватываем ошибку, кастомизируем её и выкидываем 400 с собранными данными
          exceptionFactory: (errors) => {
             const customErrors = [];

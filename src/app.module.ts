@@ -8,10 +8,6 @@ import { CommentsModule } from './features/comments/comment.module';
 import { SessionsModule } from './features/security/session.module';
 import { UsersModule } from './features/users/users.module';
 import { appSettings } from './settings/app.settings';
-//import { LoggerMiddleware } from './infrastructure/middlewares/logger.middleware';
-// import { ApiLogRepository } from './features/api.logger/api.logger.repository';
-// import { apiLogSchema } from './features/api.logger/api.logger.model';
-// import { LikePostSchema } from './features/posts/domain/like.for.post.mongoose.entity';
 import { NameIsExistConstraint } from './infrastructure/decorators/validate/user-is-exist.decorator';
 import { EmailIsConfirmedConstraint } from './infrastructure/decorators/validate/email-is-confirmed.decorator';
 import { ConfCodeIsValidConstraint } from './infrastructure/decorators/validate/confirmation-code.decorator';
@@ -21,6 +17,11 @@ import { BlogIsExistConstraint } from './infrastructure/decorators/validate/blog
 import { QueryPaginationPipe } from './infrastructure/pipes/query.global.pipe';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
+import { Player_Orm } from './features/quiz/domain/entities/player.entity';
+import { Answer_Orm } from './features/quiz/domain/entities/answer.entity';
+import { GameQuestion_Orm } from './features/quiz/domain/entities/game-question.entity';
+import { Game_Orm } from './features/quiz/domain/entities/game.entity';
+import { QuestionsModule } from './features/quiz/questons.module';
 
 const decorators = [NameIsExistConstraint,
   EmailIsConfirmedConstraint,
@@ -57,6 +58,7 @@ const decorators = [NameIsExistConstraint,
       autoLoadEntities: true,
       logging: true
     }),
+    TypeOrmModule.forFeature([Player_Orm, Answer_Orm, GameQuestion_Orm, Game_Orm]),
 
     UsersModule,
     AuthModule,
@@ -65,13 +67,13 @@ const decorators = [NameIsExistConstraint,
     BlogsModule,
     PostsModule,
     CommentsModule,
-    // LikesModule,
     TestingModule,
+    QuestionsModule
   ],
 
   providers: [...decorators,
     // ApiLogRepository,
-    QueryPaginationPipe
+    QueryPaginationPipe,
   ],
   exports: [CqrsModule]
 })

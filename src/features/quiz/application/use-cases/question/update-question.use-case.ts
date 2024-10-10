@@ -24,7 +24,7 @@ export class QuestionUpdateUseCase implements ICommandHandler<QuestionUpdateComm
             errorMessage: 'Question not found',
             status: ResultStatus.NOT_FOUND
          }
-         question.updateQuestion(question)
+         question.updateQuestion(command.question)
          await this.questionRepository.save(question)
          return {
             data: question.id,
