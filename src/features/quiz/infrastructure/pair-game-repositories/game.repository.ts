@@ -29,11 +29,34 @@ export class GameRepository {
       return unfinishedGames;
    }
 
+   async findGameForAnswer(userId: string): Promise<Game_Orm | null> {
+      return await this.gameORMRepository
+         .createQueryBuilder('game')
+       //  .leftJoinAndSelect('game.questions', 'gq')
+         .leftJoinAndSelect('game.firstPlayer', 'po')
+         .leftJoinAndSelect('po.user', 'pou')
+         .leftJoinAndSelect('po.answers', 'poa')
+    //     .leftJoinAndSelect('poa.question', 'poaq')
+         .leftJoinAndSelect('game.secondPlayer', 'pt')
+         .leftJoinAndSelect('pt.user', 'ptu')
+         .leftJoinAndSelect('pt.answers', 'pta')
+      //   .leftJoinAndSelect('pta.question', 'ptaq')
+         .where('game.gameStatus = :active', {
+            active: GameStatusEnum.Active,
+         })
+         .andWhere('(pou.id = :userId or ptu.id = :userId)', { userId: userId })
+      //   .orderBy('gq.createdAt', 'DESC')
+         .addOrderBy('poa.createdAt')
+         .addOrderBy('pta.createdAt')
+         .getOne();
+   }
+
+
    async deleteById(id: string): Promise<void> {
       await this.gameORMRepository.softDelete(id)
    }
 
    async save(game: Game_Orm): Promise<Game_Orm> {
-      return this.gameORMRepository.save(game)
+      return await this.gameORMRepository.save(game)
    }
 }

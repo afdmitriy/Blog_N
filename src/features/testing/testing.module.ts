@@ -10,12 +10,17 @@ import { Blog_Orm } from "../blogs/domain/entities/blog.typeOrm.entity";
 import { Comment_Orm } from "../comments/domain/comment.typeOrm.entity";
 import { LikeForComment_Orm } from "../comments/domain/like-for-comment.typeOrm.entity";
 import { Question_Orm } from "../quiz/domain/entities/question.entity";
+import { Game_Orm } from "../quiz/domain/entities/game.entity";
+import { GameQuestion_Orm } from "../quiz/domain/entities/game-question.entity";
+import { Answer_Orm } from "../quiz/domain/entities/answer.entity";
+import { Player_Orm } from "../quiz/domain/entities/player.entity";
 
 
 @Module({
    imports: [
       TypeOrmModule.forFeature([User_Orm, Session_Orm, PasswordResetData,
-         Blog_Orm, Post_Orm, LikeForPost_Orm, Comment_Orm, LikeForComment_Orm, Question_Orm
+         Blog_Orm, Post_Orm, LikeForPost_Orm, Comment_Orm, LikeForComment_Orm,
+         Question_Orm, Game_Orm, GameQuestion_Orm, Answer_Orm, Player_Orm
          ])
    ],
    controllers: [TestingController],

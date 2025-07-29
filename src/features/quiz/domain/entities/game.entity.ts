@@ -8,24 +8,30 @@ import { GameQuestion_Orm } from "./game-question.entity";
 export class Game_Orm extends BaseTypeORMEntity {
 
    @Column({ type: 'enum', enum: GameStatusEnum, default: GameStatusEnum.PendingSecondPlayer })
-   gameStatus: GameStatusEnum;
+   public gameStatus: GameStatusEnum;
 
    @Column({ type: 'uuid' })
-   firstPlayerId: string
+   public firstPlayerId: string
 
-   @Column({ type: 'uuid', default: null })
-   secondPlayerId: string | null
+   @Column({ type: 'uuid', default: null, nullable: true })
+   public secondPlayerId: string | null
 
-   @OneToOne(() => Player_Orm)
+   @Column({ type: 'timestamp with time zone', default: null })
+   public pairCreatedDate: Date
+
+   @Column({ type: 'timestamp with time zone', default: null })
+   public finishGameDate: Date
+
+   @OneToOne(() => Player_Orm, { eager: true, onDelete: "CASCADE" })
    @JoinColumn({ name: 'firstPlayerId' })
    public firstPlayer: Player_Orm;
 
-   @OneToOne(() => Player_Orm)
+   @OneToOne(() => Player_Orm, { eager: true, onDelete: "CASCADE", nullable: true })
    @JoinColumn({ name: 'secondPlayerId' })
    public secondPlayer: Player_Orm;
 
-   @OneToMany(() => GameQuestion_Orm, (gq) => gq.gameId)
-   gameQuestions: GameQuestion_Orm[];
+   @OneToMany(() => GameQuestion_Orm, (gq) => gq.game, { eager: false, onDelete: "CASCADE" })
+   public gameQuestions: GameQuestion_Orm[];
 
    static createGame(firstPlayerId: string): Game_Orm {
       const game = new this();
@@ -36,6 +42,13 @@ export class Game_Orm extends BaseTypeORMEntity {
 
    addSecondPlayer(secondPlayerId: string): void {
       this.secondPlayerId = secondPlayerId
+      this.gameStatus = GameStatusEnum.Active
+      this.pairCreatedDate = new Date()
+   }
+
+   setGameFinished(): void {
+      this.gameStatus = GameStatusEnum.Finished
+      this.finishGameDate = new Date()
    }
 
 }

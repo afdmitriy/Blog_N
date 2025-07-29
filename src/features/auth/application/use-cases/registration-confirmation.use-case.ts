@@ -24,16 +24,6 @@ export class RegistrationConfirmationUseCase implements ICommandHandler<Registra
             status: ResultStatus.NOT_FOUND
          }
 
-         // if (user.codeExpirationDate < new Date()) return {
-         //    data: null,
-         //    errorMessage: 'Code is expired',
-         //    status: ResultStatus.UNAUTHORIZED
-         // }
-         // if (user.isConfirmed != false) return {
-         //    data: null,
-         //    errorMessage: 'User already confirmed',
-         //    status: ResultStatus.UNAUTHORIZED
-         // }
          user.confirmEmail()
          await this.userRepository.save(user);
          return {

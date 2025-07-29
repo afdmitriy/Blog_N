@@ -6,7 +6,7 @@ import { Answer_Orm } from "./answer.entity";
 @Entity()
 export class Player_Orm extends BaseTypeORMEntity {
 
-   @Column({type: 'int', default: 0})
+   @Column({ type: 'int', default: 0 })
    score: number;
 
    @Column({ type: 'uuid' })
@@ -15,8 +15,8 @@ export class Player_Orm extends BaseTypeORMEntity {
    @ManyToOne(() => User_Orm, (u) => u.players, { onDelete: "CASCADE" })
    @JoinColumn({ name: 'userId' })
    user: User_Orm;
-   
-   @OneToMany(() => Answer_Orm, (a) => a.playerId)
+
+   @OneToMany(() => Answer_Orm, (a) => a.player)
    answers: Answer_Orm[];
 
    static createPlayer(userId: string): Player_Orm {
@@ -24,6 +24,10 @@ export class Player_Orm extends BaseTypeORMEntity {
       player.userId = userId
 
       return player;
+   }
+
+   addScore() {
+      this.score += 1
    }
 
 }

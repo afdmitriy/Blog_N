@@ -13,11 +13,18 @@ export class PlayerRepository {
       return player || null;
    }
 
+   async getByUserId(userId: string): Promise<Player_Orm | null> {
+      const player = await this.playerORMRepository.findOne({ where: { userId } })
+      console.warn("player", player)
+      console.log('Is player null or undefined?', player == null)
+      return player
+   }
+
    async deleteById(id: string): Promise<void> {
-      await this.playerORMRepository.softDelete(id)
+      await await this.playerORMRepository.softDelete(id)
    }
 
    async save(player: Player_Orm): Promise<Player_Orm> {
-      return this.playerORMRepository.save(player)
+      return await this.playerORMRepository.save(player)
    }
 }

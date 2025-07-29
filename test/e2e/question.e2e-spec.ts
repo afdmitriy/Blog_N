@@ -3,7 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { applyAppSettings } from '../../src/settings/apply.app.settings';
 import { AppModule } from '../../src/app.module';
-import { QuestionTestManager } from '../common/question.test.manager';
+import { QuestionTestManager } from '../common/questionTestManager';
+
 
 
 describe('Questions e2e tests', () => {

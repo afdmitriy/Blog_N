@@ -21,7 +21,7 @@ import { Player_Orm } from './features/quiz/domain/entities/player.entity';
 import { Answer_Orm } from './features/quiz/domain/entities/answer.entity';
 import { GameQuestion_Orm } from './features/quiz/domain/entities/game-question.entity';
 import { Game_Orm } from './features/quiz/domain/entities/game.entity';
-import { QuestionsModule } from './features/quiz/questons.module';
+import { QuizModule } from './features/quiz/quiz.module';
 
 const decorators = [NameIsExistConstraint,
   EmailIsConfirmedConstraint,
@@ -32,15 +32,6 @@ const decorators = [NameIsExistConstraint,
 @Module({
   imports: [
     CqrsModule,
-    // MongooseModule.forRoot(
-    //   appSettings.env.isTesting()
-    //     ? appSettings.api.MONGO_URI_FOR_TESTS
-    //     : appSettings.api.MONGO_URI,
-    //), // 'mongodb://127.0.0.1:27017', {dbName: 'blog-nest'}
-    // MongooseModule.forFeature([
-    //   { name: 'LikeForPost', schema: LikePostSchema },
-    //   { name: 'ApiLog', schema: apiLogSchema }
-    // ]),
     forwardRef(() => JwtModule),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -68,7 +59,7 @@ const decorators = [NameIsExistConstraint,
     PostsModule,
     CommentsModule,
     TestingModule,
-    QuestionsModule
+    QuizModule
   ],
 
   providers: [...decorators,

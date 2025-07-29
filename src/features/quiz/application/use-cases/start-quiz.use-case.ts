@@ -6,7 +6,6 @@ import { Game_Orm } from "../../domain/entities/game.entity";
 import { PlayerRepository } from "../../infrastructure/player.repository";
 import { GameRepository } from "../../infrastructure/pair-game-repositories/game.repository";
 import { ResultStatus } from "../../../../base/models/enums/enums";
-import { GameStatusEnum } from "../../api/models/enums/enums";
 import { GameQuestion_Orm } from "../../domain/entities/game-question.entity";
 import { QuestionRepository } from "../../infrastructure/quiz-repositories/question.repository";
 import { GameQuestionRepository } from "../../infrastructure/game-question.repository";
@@ -27,28 +26,31 @@ export class StartGameUseCase implements ICommandHandler<StartGameCommand> {
    async execute(command: StartGameCommand): Promise<ResultObjectModel<string | null>> {
       try {
          const activeUserGame = await this.gameRepository.getUnfinishedGameByUserId(command.userId)
+         
          if (!activeUserGame) {
-            const activeGame = await this.gameRepository.getPendingGame()
-            if (activeGame) {
+            const pendingGame = await this.gameRepository.getPendingGame()
+            if (pendingGame) {
 
                const newPlayer = Player_Orm.createPlayer(command.userId)
                const secondPlayer = await this.playerRepository.save(newPlayer)
-               activeGame.addSecondPlayer(secondPlayer.id)
-               await this.gameRepository.save(activeGame)
+               pendingGame.addSecondPlayer(secondPlayer.id)
+               await this.gameRepository.save(pendingGame)
 
 
                const randomQuestions = await this.questionRepository.getRandomQuestions();
+               //console.log('Random questions in use case', randomQuestions)
 
                // Создаем сущности GameQuestion и связываем их с игрой
                const gameQuestions = randomQuestions.map((question, index) => {
-                  const gameQuestion = GameQuestion_Orm.createGameQuestion(activeGame.id, question, index + 1)
+                  const gameQuestion = GameQuestion_Orm.createGameQuestion(pendingGame.id, question, index + 1)
+               //   console.log('GAME_QUESTION', gameQuestion, 'activeGame.id', activeGame.id, 'question', question, 'index', index)
                   return gameQuestion;
                });
-               console.log('Game questions in use case', gameQuestions)
+              // console.log('Game questions in use case', gameQuestions)
                await this.gameQuestionRepository.save(gameQuestions);
 
                return {
-                  data: activeGame.id,
+                  data: pendingGame.id,
                   status: ResultStatus.SUCCESS
                }
             }
@@ -62,20 +64,17 @@ export class StartGameUseCase implements ICommandHandler<StartGameCommand> {
             }
          }
 
-         if (activeUserGame.gameStatus == GameStatusEnum.Active) return {
+         return {
             data: null,
             errorMessage: 'User already in game',
             status: ResultStatus.FORBIDDEN
          }
 
-         return {
-            data: activeUserGame.id,
-            status: ResultStatus.SUCCESS
-         }
-
       } catch (error) {
-         console.log(error)
+         console.error(error)
          throw error
       }
    }
 }
+
+

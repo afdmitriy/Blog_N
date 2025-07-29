@@ -29,5 +29,4 @@ import { QuestionPublishUpdateUseCase } from "./application/use-cases/question/p
    ],
    exports: []
 })
-export class QuestionsModule {
-}
+export class QuestionsModule {}

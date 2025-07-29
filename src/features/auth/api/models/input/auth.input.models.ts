@@ -1,5 +1,4 @@
 import { IsEmail, Length } from "class-validator";
-
 import { ConfCodeIsValid } from "../../../../../infrastructure/decorators/validate/confirmation-code.decorator";
 import { EmailIsConfirmed } from "../../../../../infrastructure/decorators/validate/email-is-confirmed.decorator";
 import { Trim } from "../../../../../infrastructure/decorators/transform/trim.decorator";

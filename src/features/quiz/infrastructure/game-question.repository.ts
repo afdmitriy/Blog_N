@@ -7,7 +7,18 @@ import { GameQuestion_Orm } from "../domain/entities/game-question.entity";
 export class GameQuestionRepository {
    constructor(@InjectRepository(GameQuestion_Orm) protected gameQuestionORMRepository: Repository<GameQuestion_Orm>) { }
 
+   async getGameQuestion(number: number, gameId: string, questionId: string) {
+      return await this.gameQuestionORMRepository.findOne({
+         where: {
+            gameId: gameId,
+            questionId: questionId,
+            index: number
+         }
+      })
+   }
+
+
    async save(gameQuestions: GameQuestion_Orm[]): Promise<GameQuestion_Orm | GameQuestion_Orm[]> {
-      return this.gameQuestionORMRepository.save(gameQuestions)
+      return await this.gameQuestionORMRepository.save(gameQuestions)
    }
 }

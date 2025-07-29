@@ -87,7 +87,7 @@ export class AuthService {
          expiresIn: jwtConstants.refreshExpiresIn,
          secret: jwtConstants.secretRefresh
       })
-      console.log('accessToken', refreshToken)
+      
       return {
          accessToken: accessToken,
          refreshToken: refreshToken

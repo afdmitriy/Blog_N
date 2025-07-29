@@ -6,7 +6,7 @@ import { Question_Orm } from "./question.entity";
 @Entity()
 export class GameQuestion_Orm extends BaseTypeORMEntity {
 
-   @Column({ type: 'uuid' })
+   @Column({ type: 'uuid', name: "gameId" })
    gameId: string
 
    @Column({ type: 'uuid' })
@@ -15,9 +15,9 @@ export class GameQuestion_Orm extends BaseTypeORMEntity {
    @Column()
    index: number
 
-   @ManyToOne(() => Game_Orm, (g) => g.gameQuestions, { onDelete: "CASCADE" })
-   @JoinColumn({ name: 'gameId' })
-   user: Game_Orm;
+   @ManyToOne(() => Game_Orm, (g) => g.gameQuestions, { eager: false, onDelete: "CASCADE" })
+   @JoinColumn({ name: 'gameId', referencedColumnName: "id" })
+   game: Game_Orm;
 
    @ManyToOne(() => Question_Orm, (q) => q.gameQuestions, { onDelete: "CASCADE" })
    @JoinColumn({ name: 'questionId' })

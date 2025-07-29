@@ -13,11 +13,29 @@ export class AnswerRepository {
       return answer || null;
    }
 
+   async getPlayerAnswersByUserId(userId: string): Promise<Answer_Orm[]> {
+      const answers = await this.answerORMRepository
+         .createQueryBuilder('answer')
+         .leftJoinAndSelect('answer.player', 'player')
+         .where('player.userId = :userId', { userId })
+         .getMany()
+      return answers;
+   }
+
+   async getAnswersByGameId(gameId: string): Promise<Answer_Orm[]> {
+      const answers = await this.answerORMRepository
+         .createQueryBuilder('answer')
+         .leftJoinAndSelect('answer.question', 'question')
+         .where('question.gameId = :gameId', { gameId })
+         .getMany()
+      return answers
+   }
+
    async deleteById(id: string): Promise<void> {
       await this.answerORMRepository.softDelete(id)
    }
 
    async save(answer: Answer_Orm): Promise<Answer_Orm> {
-      return this.answerORMRepository.save(answer)
+      return await this.answerORMRepository.save(answer)
    }
 }

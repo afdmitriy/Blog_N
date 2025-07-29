@@ -4,10 +4,10 @@ import { Request, Response } from 'express';
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
    catch(exception: HttpException, host: ArgumentsHost) {
-      const ctx = host.switchToHttp();
-      const response = ctx.getResponse<Response>();
-      const request = ctx.getRequest<Request>();
-      const status = exception.getStatus();
+      const ctx = host.switchToHttp(); //говорим серваку переключится в http (host.switchToHttp()), он возвращает контекст
+      const response = ctx.getResponse<Response>(); //у контекста мы берем res
+      const request = ctx.getRequest<Request>(); //у контекста мы берем req
+      const status = exception.getStatus(); //к нам приходит exception error, получаем status
 
       if (status === HttpStatus.BAD_REQUEST) {
          const errorsResponse: { errorsMessages: any[] } = {

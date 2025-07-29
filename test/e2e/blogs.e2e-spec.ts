@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import mongoose from 'mongoose';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { BlogTestManager } from '../common/blogTestManager';
@@ -31,7 +30,6 @@ describe('Blogs e2e', () => {
 
   afterAll(async () => {
     await app.close();
-    await mongoose.disconnect();
   });
 
   const adminData = {

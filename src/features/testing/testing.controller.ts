@@ -10,6 +10,10 @@ import { Comment_Orm } from "../comments/domain/comment.typeOrm.entity";
 import { LikeForComment_Orm } from "../comments/domain/like-for-comment.typeOrm.entity";
 import { LikeForPost_Orm } from "../posts/domain/like-for-post.typeOrm.entity";
 import { Question_Orm } from "../quiz/domain/entities/question.entity";
+import { Game_Orm } from "../quiz/domain/entities/game.entity";
+import { GameQuestion_Orm } from "../quiz/domain/entities/game-question.entity";
+import { Answer_Orm } from "../quiz/domain/entities/answer.entity";
+import { Player_Orm } from "../quiz/domain/entities/player.entity";
 
 
 @Controller('testing')
@@ -24,13 +28,12 @@ export class TestingController {
       @InjectRepository(Comment_Orm) protected commentRepository: Repository<Comment_Orm>,
       @InjectRepository(LikeForComment_Orm) protected likeForCommentRepository: Repository<LikeForComment_Orm>,
       @InjectRepository(Question_Orm) protected questionRepository: Repository<Question_Orm>,
-      // @InjectModel(BLOG_MODEL_NAME) private blogModel: Model<BlogDocument>,
-      // @InjectModel(POST_MODEL_NAME) private postModel: Model<PostDocument>,
-      // @InjectModel(USER_MODEL_NAME) private userModel: Model<UserDocument>,
-      // @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-      // @InjectModel(LikeForComment.name) private likeCommentModel: Model<LikeCommentDocument>,
-      // @InjectModel(LikeForPost.name) private likePostModel: Model<LikePostDocument>,
-      // @InjectModel(Session.name) private sessionModel: Model<SessionDocument>
+      @InjectRepository(Game_Orm) protected gameRepository: Repository<Game_Orm>,
+      @InjectRepository(GameQuestion_Orm) protected gameQuestionRepository: Repository<GameQuestion_Orm>,
+      @InjectRepository(Answer_Orm) protected answerRepository: Repository<Answer_Orm>,
+      @InjectRepository(Player_Orm) protected playerRepository: Repository<Player_Orm>,
+
+
    ) {}
    @Delete('all-data')
    @HttpCode(204)
@@ -45,6 +48,10 @@ export class TestingController {
       await this.likeForCommentRepository.delete({});
       await this.likeForPostRepository.delete({});
       await this.questionRepository.delete({})
+      await this.gameRepository.delete({})
+      await this.gameQuestionRepository.delete({})
+      await this.answerRepository.delete({})
+      await this.playerRepository.delete({})
 
 
       // await this.blogModel.deleteMany({})
